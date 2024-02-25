@@ -1,197 +1,127 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
-import {
-    useProductBrandMutation,
-    useProductCategoryMutation,
-    useProductOccasionMutation,
-    useProductThemeMutation,
-} from "../../redux/feature/product/productApi";
+import { useState } from "react";
 import { Button } from "antd";
+import {
+    useGetAllBrandQuery,
+    useGetAllCategoryQuery,
+    useGetAllOccasionQuery,
+    useGetAllThemeQuery,
+} from "../../redux/feature/product/productManagement.api";
+import { setSearchQuery } from "../../redux/feature/product/productSlice";
+import { useAppDispatch } from "../../redux/hooks";
+import GForm from "../../components/form/GForm";
+import { FieldValues, SubmitHandler } from "react-hook-form";
+import GInput from "../../components/form/GInput";
+import GCheckBox from "../../components/form/GCheckBox";
 
-const FilterView = ({
-    setQueryData,
-}: {
-    queryData: {
-        name: string;
-        category: string;
-        brand: string;
-        occasion: string;
-        theme: string;
-    };
-    setQueryData: React.Dispatch<
-        React.SetStateAction<{
-            name: string;
-            category: string;
-            brand: string;
-            occasion: string;
-            theme: string;
-            minPrice: number;
-            maxPrice: number;
-        }>
-    >;
-}) => {
-    const [productCategory] = useProductCategoryMutation();
-    const [productBrand] = useProductBrandMutation();
-    const [productOccasion] = useProductOccasionMutation();
-    const [productTheme] = useProductThemeMutation();
-    const [productCategories, setProductCategories] = useState([]);
-    const [productBrands, setProductBrands] = useState([]);
-    const [productOccasions, setProductOccasions] = useState([]);
-    const [productThemes, setProductThemes] = useState([]);
+const FilterView = () => {
+    const dispatch = useAppDispatch();
+    const [showFilter, setShowFilter] = useState(false);
+    const [resetForm, setResetForm] = useState(false);
 
-    const [selectedName, setSelectedName] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("");
-    const [selectedBrand, setSelectedBrand] = useState("");
-    const [selectedOccasion, setSelectedOccasion] = useState("");
-    const [selectedTheme, setSelectedTheme] = useState("");
+    const { data: categoryData, isLoading: categoryDataLoading } =
+        useGetAllCategoryQuery(undefined);
+    const { data: brandData, isLoading: brandDataLoading } =
+        useGetAllBrandQuery(undefined);
+    const { data: occasionData, isLoading: occasionDataLoading } =
+        useGetAllOccasionQuery(undefined);
+    const { data: themeData, isLoading: themeDataLoading } =
+        useGetAllThemeQuery(undefined);
 
-    const [minPrice, setMinPrice] = useState("");
-    const [maxPrice, setMaxPrice] = useState("");
-
-    const getProductCategory = async () => {
-        const res = await productCategory(undefined).unwrap();
-        const data = res.data.map((item: { _id: string; name: string }) => {
+    const categoryOptions = categoryData?.data?.map(
+        (item: { _id: string; name: string }) => {
             return {
-                label: item.name,
                 value: item._id,
+                label: item.name,
             };
-        });
-        return data;
-    };
+        },
+    );
 
-    const getProductBrand = async () => {
-        const res = await productBrand(undefined).unwrap();
-        const data = res.data.map((item: { _id: string; name: string }) => {
+    const brandOptions = brandData?.data?.map(
+        (item: { _id: string; name: string }) => {
             return {
-                label: item.name,
                 value: item._id,
+                label: item.name,
             };
-        });
-        return data;
-    };
+        },
+    );
 
-    const getProductOccasion = async () => {
-        const res = await productOccasion(undefined).unwrap();
-        const data = res.data.map((item: { _id: string; name: string }) => {
+    const occasionOptions = occasionData?.data?.map(
+        (item: { _id: string; name: string }) => {
             return {
-                label: item.name,
                 value: item._id,
+                label: item.name,
             };
-        });
-        return data;
-    };
+        },
+    );
 
-    const getProductTheme = async () => {
-        const res = await productTheme(undefined).unwrap();
-        const data = res.data.map((item: { _id: string; name: string }) => {
+    const themeOptions = themeData?.data?.map(
+        (item: { _id: string; name: string }) => {
             return {
-                label: item.name,
                 value: item._id,
+                label: item.name,
             };
-        });
-        return data;
-    };
-
-    useEffect(() => {
-        const fetchProductCategories = async () => {
-            try {
-                const tProductCategory = await getProductCategory();
-                const tProductBrand = await getProductBrand();
-                const tProductOccasion = await getProductOccasion();
-                const tProductTheme = await getProductTheme();
-                setProductCategories(tProductCategory);
-                setProductBrands(tProductBrand);
-                setProductOccasions(tProductOccasion);
-                setProductThemes(tProductTheme);
-            } catch (error) {
-                console.error("Error fetching product categories:", error);
-            }
-        };
-
-        fetchProductCategories();
-    }, []);
-
-    const handleSearch = () => {
-        setQueryData({
-            name: selectedName,
-            category: selectedCategory,
-            brand: selectedBrand,
-            occasion: selectedOccasion,
-            theme: selectedTheme,
-            minPrice:
-                !isNaN(parseFloat(minPrice)) && parseFloat(minPrice) > 0
-                    ? parseFloat(minPrice)
-                    : 0,
-            maxPrice: !isNaN(parseFloat(maxPrice)) ? parseFloat(maxPrice) : -1,
-        });
-    };
+        },
+    );
 
     const handleReset = () => {
-        setSelectedName("");
-        setSelectedCategory("");
-        setSelectedBrand("");
-        setSelectedOccasion("");
-        setSelectedTheme("");
-        setMinPrice("");
-        setMaxPrice("");
-        setQueryData({
-            name: "",
-            category: "",
-            brand: "",
-            occasion: "",
-            theme: "",
-            minPrice: 0,
-            maxPrice: -1,
-        });
+        setResetForm(true);
+        dispatch(
+            setSearchQuery({
+                name: "",
+                minPrice: 0,
+                maxPrice: -1,
+                category: [],
+                brand: [],
+                occasion: [],
+                theme: [],
+            }),
+        );
+        setResetForm(false);
     };
 
-    const [showFilter, setShowFilter] = useState(false);
+    const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+        const query = {
+            name: data.name ? data.name : "",
+            minPrice: data.minPrice ? Number(data.minPrice) : 0,
+            maxPrice: data.maxPrice ? Number(data.maxPrice) : -1,
+            category: data.category ? data.category : [],
+            brand: data.brand ? data.brand : [],
+            occasion: data.occasion ? data.occasion : [],
+            theme: data.theme ? data.theme : [],
+        };
+        dispatch(setSearchQuery(query));
+    };
 
     return (
         <div>
-            <div className="bg-[var(--primary-color)] py-4 px-2 rounded w-full xl:w-[300px]">
-                <div className="flex flex-col gap-1">
-                    <div className="flex flex-col gap-1 bg-[var(--primary-color)]  p-2 rounded-md">
-                        <h2 className="text-lg font-medium">Name</h2>
-                        <input
-                            type="text"
-                            placeholder="Search by name"
-                            className="w-full rounded-md border-2 border-gray-200 px-2 py-1 "
-                            value={selectedName}
-                            onChange={(e) => setSelectedName(e.target.value)}
-                        />
-                    </div>
-                    <div className="select-none m-2">
-                        <h2 className="text-lg font-medium">Price Range</h2>
+            <div className="bg-[var(--primary-color)] py-4 px-4 rounded w-full xl:w-[300px]">
+                <GForm onSubmit={onSubmit} disableReset={!resetForm}>
+                    <GInput
+                        type="text"
+                        name="name"
+                        label="Name"
+                        placeholder="Search by name"
+                    />
+                    <div className="select-none my-[10px]">
+                        <h2>Price Range</h2>
                         <div className="flex items-center gap-1 py-1">
-                            <input
+                            <GInput
                                 type="text"
-                                id="minPrice"
-                                name="filter"
+                                name="minPrice"
                                 placeholder="Min Price"
-                                value={minPrice}
-                                className="w-full rounded-md border-2 border-gray-200 px-2 py-1"
-                                onChange={(e) => {
-                                    setMinPrice(e.target.value);
-                                }}
                             />
                             <div className="text-lg font-medium text-gray-400">
                                 -
                             </div>
-                            <input
+                            <GInput
                                 type="text"
-                                id="maxPrice"
-                                name="filter"
+                                name="maxPrice"
                                 placeholder="Max Price"
-                                value={maxPrice}
-                                className="w-full rounded-md border-2 border-gray-200 px-2 py-1"
-                                onChange={(e) => {
-                                    setMaxPrice(e.target.value);
-                                }}
                             />
                         </div>
                     </div>
-                    <div className="select-none m-2">
+                    <div className="select-none">
                         <div
                             className="pl-2 flex gap-3 hover:cursor-pointer flex-row items-center bg-gray-50 py-1 mb-0"
                             onClick={() => setShowFilter(!showFilter)}
@@ -230,120 +160,39 @@ const FilterView = ({
                             <h2 className="text-[16px] font-medium">Filter</h2>
                         </div>
                         <div
-                            className={`${showFilter ? "flex flex-col gap-2 mt-0 pt-2" : "hidden"} bg-gray-50`}
+                            className={`${showFilter ? "flex flex-col gap-2 mt-0 px-[15px]" : "hidden"} bg-gray-50`}
                         >
-                            <div className="flex flex-col gap-1 bg-[var(--primary-color)] m-[10px] p-1 rounded-md">
-                                <h2 className="text-lg font-medium">
-                                    Category
-                                </h2>
-                                <div className="flex flex-row flex-wrap gap-1">
-                                    {productCategories.map(
-                                        (item: {
-                                            label: string;
-                                            value: string;
-                                        }) => (
-                                            <button
-                                                key={item.value}
-                                                onClick={() =>
-                                                    setSelectedCategory(
-                                                        item.value,
-                                                    )
-                                                }
-                                                className={`${selectedCategory === item.value ? "bg-gray-400" : ""} hover:bg-gray-400 text-[var(--secondary-color)] text-xs px-[5px] py-[1px] rounded-md hover:rounded-md border-2 border-gray-200`}
-                                            >
-                                                {item.label}
-                                            </button>
-                                        ),
-                                    )}
-                                </div>
-                            </div>
-                            <div className="flex flex-col gap-1 bg-[var(--primary-color)] m-[10px] p-1 rounded-md">
-                                <h2 className="text-lg font-medium">Brands</h2>
-                                <div className="flex flex-row flex-wrap gap-1">
-                                    {productBrands.map(
-                                        (
-                                            item: {
-                                                label: string;
-                                                value: string;
-                                            },
-                                            index,
-                                        ) => (
-                                            <button
-                                                key={index}
-                                                onClick={() =>
-                                                    setSelectedBrand(item.value)
-                                                }
-                                                className={`${selectedBrand === item.value ? "bg-gray-400" : ""} hover:bg-gray-400 text-[var(--secondary-color)] text-xs px-[5px] py-[1px] rounded-md hover:rounded-md border-2 border-gray-200`}
-                                            >
-                                                {item.label}
-                                            </button>
-                                        ),
-                                    )}
-                                </div>
-                            </div>
-                            <div className="flex flex-col gap-1 bg-[var(--primary-color)] m-[10px] p-1 rounded-md">
-                                <h2 className="text-lg font-medium">
-                                    Occasion
-                                </h2>
-                                <div className="flex flex-row flex-wrap gap-1">
-                                    {productOccasions.map(
-                                        (
-                                            item: {
-                                                label: string;
-                                                value: string;
-                                            },
-                                            index,
-                                        ) => (
-                                            <button
-                                                key={index}
-                                                onClick={() =>
-                                                    setSelectedOccasion(
-                                                        item.value,
-                                                    )
-                                                }
-                                                className={`${selectedOccasion === item.value ? "bg-gray-400" : ""} hover:bg-gray-400 text-[var(--secondary-color)] text-xs px-[5px] py-[1px] rounded-md hover:rounded-md border-2 border-gray-200`}
-                                            >
-                                                {item.label}
-                                            </button>
-                                        ),
-                                    )}
-                                </div>
-                            </div>
-                            <div className="flex flex-col gap-1 bg-[var(--primary-color)] m-[10px] p-1 rounded-md">
-                                <h2 className="text-lg font-medium">Theme</h2>
-                                <div className="flex flex-row flex-wrap gap-1">
-                                    {productThemes.map(
-                                        (
-                                            item: {
-                                                label: string;
-                                                value: string;
-                                            },
-                                            index,
-                                        ) => (
-                                            <button
-                                                key={index}
-                                                onClick={() =>
-                                                    setSelectedTheme(item.value)
-                                                }
-                                                className={`${selectedTheme === item.value ? "bg-gray-400" : ""} hover:bg-gray-400 text-[var(--secondary-color)] text-xs px-[5px] py-[1px] rounded-md hover:rounded-md border-2 border-gray-200`}
-                                            >
-                                                {item.label}
-                                            </button>
-                                        ),
-                                    )}
-                                </div>
-                            </div>
+                            <GCheckBox
+                                name="category"
+                                label="Category"
+                                options={categoryOptions}
+                                disabled={categoryDataLoading}
+                            />
+                            <GCheckBox
+                                name="brand"
+                                label="Brand"
+                                options={brandOptions}
+                                disabled={brandDataLoading}
+                            />
+                            <GCheckBox
+                                name="occasion"
+                                label="Occasion"
+                                options={occasionOptions}
+                                disabled={occasionDataLoading}
+                            />
+                            <GCheckBox
+                                name="theme"
+                                label="Theme"
+                                options={themeOptions}
+                                disabled={themeDataLoading}
+                            />
                         </div>
                     </div>
-                </div>
-                <div className="flex justify-center gap-3 mt-5">
-                    <div className="flex justify-center">
-                        <Button onClick={handleSearch}>Search</Button>
-                    </div>
-                    <div className="flex justify-center">
+                    <div className="my-[15px] flex justify-center gap-2">
+                        <Button htmlType="submit">Search</Button>
                         <Button onClick={handleReset}>Reset</Button>
                     </div>
-                </div>
+                </GForm>
             </div>
         </div>
     );

@@ -1,178 +1,30 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
-import {
-    useDeleteProductMutation,
-    useGetProductsMutation,
-} from "../../redux/feature/product/productApi";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useState } from "react";
 import ProductGridView from "./ProductGridView";
-import { toast } from "sonner";
-import { useSellProductMutation } from "../../redux/feature/SaleInfo/saleInfoApi";
 import FilterView from "./FilterView";
 import { Spin } from "antd";
 import ProductListView from "./ProductListView";
+import { useGetAllProductsQuery } from "../../redux/feature/product/productManagement.api";
+import { useAppSelector } from "../../redux/hooks";
+import { useSearchParameter } from "../../redux/feature/product/productSlice";
 
-type TProductProps = {
-    _id: string;
-    name: string;
-    price: string;
-    quantity: string;
-    description: string;
-    imageURL: string;
-    category: {
-        _id: string;
-        name: string;
-    };
-    brand: {
-        _id: string;
-        name: string;
-    };
-    occasion: {
-        _id: string;
-        name: string;
-    };
-    theme: {
-        _id: string;
-        name: string;
-    };
-    createdAt: string;
-    updatedAt: string;
+const filterObject = (obj: { [s: string]: unknown } | ArrayLike<unknown>) => {
+    return Object.fromEntries(
+        Object.entries(obj).filter(([key, value]) => {
+            if (Array.isArray(value)) {
+                return value.length !== 0;
+            } else {
+                return value !== "" && value !== 0 && value !== -1;
+            }
+        }),
+    );
 };
 
 const ProductList = () => {
-    const [products] = useGetProductsMutation();
-    const [deleteProduct] = useDeleteProductMutation();
-    const [sellProduct] = useSellProductMutation();
-    const [productData, setProductData] = useState<[TProductProps]>([
-        {
-            _id: "",
-            name: "",
-            price: "",
-            quantity: "",
-            description: "",
-            imageURL: "",
-            category: {
-                _id: "",
-                name: "",
-            },
-            brand: {
-                _id: "",
-                name: "",
-            },
-            occasion: {
-                _id: "",
-                name: "",
-            },
-            theme: {
-                _id: "",
-                name: "",
-            },
-            createdAt: "",
-            updatedAt: "",
-        },
-    ]);
-
-    const [queryData, setQueryData] = useState({
-        name: "",
-        category: "",
-        brand: "",
-        occasion: "",
-        theme: "",
-        minPrice: 0,
-        maxPrice: -1,
-    });
-
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        console.log("queryData", queryData);
-        const fetchProducts = async () => {
-            const res = await products(queryData).unwrap();
-            if (res.success === true) {
-                setProductData(res.data);
-            }
-            setLoading(false);
-        };
-
-        fetchProducts();
-    }, [loading]);
-
-    useEffect(() => {
-        setLoading(true);
-        const fetchProducts = async () => {
-            const res = await products(queryData).unwrap();
-            if (res.success === true) {
-                setProductData(res.data);
-            }
-            setLoading(false);
-        };
-
-        fetchProducts();
-    }, [queryData]);
-
-    const handleDeleteProduct = async (id: string) => {
-        const toastId = toast.loading("Deleting Product...");
-        try {
-            const res = await deleteProduct(id).unwrap();
-
-            if (res.success === true) {
-                toast.success(res.message || "Product deleted successfully", {
-                    id: toastId,
-                    duration: 2000,
-                });
-                setLoading(true);
-            } else {
-                toast.error(res.message || "Failed to delete product", {
-                    id: toastId,
-                    duration: 2000,
-                });
-            }
-        } catch (error: any) {
-            toast.error(error.data.message || "Failed to add product", {
-                id: toastId,
-                duration: 2000,
-            });
-        }
-    };
-
-    const [showSellModal, setShowSellModal] = useState(false);
-
-    const handleSellProduct = async (
-        name: string,
-        productId: string,
-        quantity: number,
-    ): Promise<boolean> => {
-        const toastId = toast.loading("Selling Product...");
-        try {
-            const saleInfo = {
-                quantity: quantity,
-                productId: productId,
-                buyerName: name,
-            };
-            const res = await sellProduct(saleInfo).unwrap();
-
-            if (res.success === true) {
-                toast.success(res.message || "Product selling successfully", {
-                    id: toastId,
-                    duration: 2000,
-                });
-                setLoading(true);
-                return true;
-            } else {
-                toast.error(res.message || "Failed to sell product", {
-                    id: toastId,
-                    duration: 2000,
-                });
-                return false;
-            }
-        } catch (error: any) {
-            toast.error(error.data.message || "Failed to sell product", {
-                id: toastId,
-                duration: 2000,
-            });
-            return false;
-        }
-    };
+    const searchParameter = useAppSelector(useSearchParameter);
+    const { data: productsData, isLoading } = useGetAllProductsQuery(
+        filterObject(searchParameter),
+    );
 
     const [gridView, setGridView] = useState(false);
 
@@ -204,25 +56,16 @@ const ProductList = () => {
                 </div>
             </div>
             <div className="flex flex-col xl:flex-row xl:items-start xl:justify-center gap-3">
-                <FilterView setQueryData={setQueryData} queryData={queryData} />
-                {loading === false ? (
+                <FilterView />
+                {isLoading === false ? (
                     <div className="w-full">
                         {gridView ? (
                             <ProductGridView
-                                productData={productData}
-                                handleDeleteProduct={handleDeleteProduct}
-                                handleSellProduct={handleSellProduct}
-                                showSellModal={showSellModal}
-                                setShowSellModal={setShowSellModal}
+                                productData={productsData?.data || []}
                             />
                         ) : (
                             <ProductListView
-                                productData={productData}
-                                handleDeleteProduct={handleDeleteProduct}
-                                handleSellProduct={handleSellProduct}
-                                showSellModal={showSellModal}
-                                setShowSellModal={setShowSellModal}
-                                setProductLoading={setLoading}
+                                productData={productsData?.data || []}
                             />
                         )}
                     </div>

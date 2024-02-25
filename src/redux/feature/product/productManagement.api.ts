@@ -33,30 +33,18 @@ const ProductManagement = baseApi.injectEndpoints({
                 body: productInfo,
             }),
         }),
-        getProducts: builder.mutation({
+        getAllProducts: builder.query({
             query: (query) => ({
                 url: "/product",
                 method: "GET",
                 params: query,
             }),
+            providesTags: ["products"],
         }),
-        getProductById: builder.mutation({
+        getProductById: builder.query({
             query: (productId) => ({
                 url: `/product/${productId}`,
                 method: "GET",
-            }),
-        }),
-        deleteProducts: builder.mutation({
-            query: (productIds) => ({
-                url: "/product",
-                method: "DELETE",
-                body: productIds,
-            }),
-        }),
-        deleteProduct: builder.mutation({
-            query: (productId) => ({
-                url: `/product/${productId}`,
-                method: "DELETE",
             }),
         }),
         updateProduct: builder.mutation({
@@ -65,6 +53,22 @@ const ProductManagement = baseApi.injectEndpoints({
                 method: "PUT",
                 body: payload.productInfo,
             }),
+            invalidatesTags: ["products"],
+        }),
+        deleteSingleProduct: builder.mutation({
+            query: (productId) => ({
+                url: `/product/${productId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["products"],
+        }),
+        deleteMultipleProducts: builder.mutation({
+            query: (productIds) => ({
+                url: "/product",
+                method: "DELETE",
+                body: productIds,
+            }),
+            invalidatesTags: ["products"],
         }),
     }),
 });
@@ -75,10 +79,9 @@ export const {
     useGetAllOccasionQuery,
     useGetAllThemeQuery,
     useAddNewProductMutation,
-
-    useGetProductsMutation,
-    useGetProductByIdMutation,
-    useDeleteProductsMutation,
-    useDeleteProductMutation,
+    useGetAllProductsQuery,
+    useGetProductByIdQuery,
     useUpdateProductMutation,
+    useDeleteSingleProductMutation,
+    useDeleteMultipleProductsMutation,
 } = ProductManagement;

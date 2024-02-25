@@ -1,26 +1,24 @@
-import { Form, Input } from "antd";
+import { Checkbox, Form } from "antd";
 import { Controller } from "react-hook-form";
 
-type TGInputProps = {
-    type: string;
+type TGCheckBoxProps = {
     name: string;
-    label?: string;
-    placeholder?: string;
+    label: string;
+    options: { value: string; label: string }[] | undefined;
     disabled?: boolean;
 };
 
-const GInput = ({ type, name, placeholder, label, disabled }: TGInputProps) => {
+const GCheckBox = ({ name, label, options, disabled }: TGCheckBoxProps) => {
     return (
-        <div style={{ marginBottom: `${label && "10px"}` }}>
+        <div style={{ marginBottom: "5px" }}>
             <Controller
                 name={name}
                 render={({ field, fieldState: { error } }) => (
-                    <Form.Item label={label} style={{ margin: "0px" }}>
-                        <Input
+                    <Form.Item label={label}>
+                        <Checkbox.Group
                             {...field}
-                            type={type}
-                            id={name}
-                            placeholder={placeholder}
+                            options={options}
+                            style={{ width: "100%" }}
                             disabled={disabled}
                         />
                         {error && (
@@ -35,4 +33,4 @@ const GInput = ({ type, name, placeholder, label, disabled }: TGInputProps) => {
     );
 };
 
-export default GInput;
+export default GCheckBox;

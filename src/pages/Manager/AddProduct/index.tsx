@@ -16,6 +16,7 @@ import {
     useGetAllThemeQuery,
 } from "../../../redux/feature/product/productManagement.api";
 import { useNavigate } from "react-router";
+// import GImageInput from "../../../components/form/GImageInput";
 
 const AddProduct = () => {
     const [addNewProduct] = useAddNewProductMutation();
@@ -78,12 +79,16 @@ const AddProduct = () => {
             occasion: data.occasion,
             theme: data.theme,
         };
-        // console.log(productInfo);
+        console.log(data);
+
+        const formData = new FormData();
+        formData.append("data", JSON.stringify(productInfo));
+        // formData.append("file", data.imageURL);
 
         try {
-            const res = await addNewProduct(productInfo).unwrap();
+            const res = await addNewProduct(formData).unwrap();
             console.log(res);
-            if (res.success === true) {
+            if (res.success) {
                 navigate("/gift-products/gift-list");
                 toast.success("Product Created Successfully", {
                     id: toastId,
@@ -121,36 +126,37 @@ const AddProduct = () => {
                         placeholder="Enter product name"
                         label="Product Name"
                     />
-
                     <GInput
                         type="text"
                         name="price"
                         placeholder="Enter price"
                         label="Price"
                     />
-
                     <GInput
                         type="text"
                         name="quantity"
                         placeholder="Enter Product Quantity"
                         label="Product Quantity"
                     />
-
+                    {/* <GImageInput
+                        type="file"
+                        name="imageURL"
+                        label="Product Image"
+                    /> */}
                     <GTextBox
                         type="text"
                         name="description"
                         placeholder="Enter Product Details"
                         label="Product Details"
                     />
-
                     <GSelect
                         name="category"
                         placeholder="Select Product Category"
                         label="Product Category"
+                        mode="multiple"
                         options={categoryOptions}
                         disabled={isCategoryDataLoading}
                     />
-
                     <GSelect
                         name="brand"
                         placeholder="Select Product Brand"
@@ -158,23 +164,22 @@ const AddProduct = () => {
                         options={brandOptions}
                         disabled={isBrandDataLoading}
                     />
-
                     <GSelect
                         name="occasion"
                         placeholder="Select Product Suitable Occasion"
                         label="Product Suitable Occasion"
+                        mode="multiple"
                         options={occasionOptions}
                         disabled={isOccasionDataLoading}
                     />
-
                     <GSelect
                         name="theme"
                         placeholder="Select Product Theme"
                         label="Product Theme"
+                        mode="multiple"
                         options={themeOptions}
                         disabled={isThemeDataLoading}
                     />
-
                     <button
                         type="submit"
                         className="bg-[var(--secondary-color)] text-[var(--primary-color)] w-full py-2 rounded-lg"

@@ -1,315 +1,119 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
-import {
-    useGetProductByIdMutation,
-    useUpdateProductMutation,
-    // useProductBrandMutation,
-    // useProductCategoryMutation,
-    // useProductOccasionMutation,
-    // useProductThemeMutation,
-} from "../../redux/feature/product/productApi";
 import { toast } from "sonner";
 import { useLoaderData, useNavigate } from "react-router";
-import TextArea from "antd/es/input/TextArea";
+import GForm from "../../components/form/GForm";
+import GInput from "../../components/form/GInput";
+import GTextBox from "../../components/form/GTextBox";
+import GSelect from "../../components/form/GSelect";
+import {
+    useGetAllBrandQuery,
+    useGetAllCategoryQuery,
+    useGetAllOccasionQuery,
+    useGetAllThemeQuery,
+    useGetProductByIdQuery,
+    useUpdateProductMutation,
+} from "../../redux/feature/product/productManagement.api";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { productSchema } from "../../Schemas/product.schema";
+import { FieldValues, SubmitHandler } from "react-hook-form";
+import { Spin } from "antd";
+
+function convertNumbersToStrings(
+    obj: Record<string, any>,
+): Record<string, any> {
+    const newObj: Record<string, any> = {};
+
+    for (const [key, value] of Object.entries(obj)) {
+        newObj[key] = typeof value === "number" ? value.toString() : value;
+    }
+
+    return newObj;
+}
 
 const EditProduct = () => {
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
-    const productId = useLoaderData();
+    const param = useLoaderData() as { id: string };
     const [updateProduct] = useUpdateProductMutation();
-    const [productData] = useGetProductByIdMutation();
-    // const [productCategory] = useProductCategoryMutation();
-    // const [productBrand] = useProductBrandMutation();
-    // const [productOccasion] = useProductOccasionMutation();
-    // const [productTheme] = useProductThemeMutation();
-    // const [productCategories, setProductCategories] = useState([]);
-    // const [productBrands, setProductBrands] = useState([]);
-    // const [productOccasions, setProductOccasions] = useState([]);
-    // const [productThemes, setProductThemes] = useState([]);
-    const [productInfo, setProductInfo] = useState({
-        _id: "",
-        name: "",
-        price: "",
-        quantity: "",
-        description: "",
-        category: "",
-        brand: "",
-        occasion: "",
-        theme: "",
-    });
 
-    const [updatedProductInfo, setUpdatedProductInfo] = useState({
-        name: "",
-        price: "",
-        quantity: "",
-        description: "",
-        // category: "",
-        // brand: "",
-        // occasion: "",
-        // theme: "",
-    });
+    const { data: productData, isLoading: isProductDataLoading } =
+        useGetProductByIdQuery(param?.id);
 
-    const [inputError, setInputError] = useState({
-        name: { error: false, message: "" },
-        price: { error: false, message: "" },
-        quantity: { error: false, message: "" },
-        description: { error: false, message: "" },
-        category: { error: false, message: "" },
-        brand: { error: false, message: "" },
-        occasion: { error: false, message: "" },
-        theme: { error: false, message: "" },
-    });
+    const { data: categoryData, isLoading: isCategoryDataLoading } =
+        useGetAllCategoryQuery(undefined);
+    const { data: brandData, isLoading: isBrandDataLoading } =
+        useGetAllBrandQuery(undefined);
+    const { data: occasionData, isLoading: isOccasionDataLoading } =
+        useGetAllOccasionQuery(undefined);
+    const { data: themeData, isLoading: isThemeDataLoading } =
+        useGetAllThemeQuery(undefined);
 
-    // const getProductCategory = async () => {
-    //     const res = await productCategory(undefined).unwrap();
-    //     const data = res.data.map((item: { _id: string; name: string }) => {
-    //         return {
-    //             label: item.name,
-    //             value: item._id,
-    //         };
-    //     });
-    //     return data;
-    // };
+    const categoryOptions = categoryData?.data?.map(
+        (item: { _id: string; name: string }) => {
+            return {
+                value: item._id,
+                label: item.name,
+            };
+        },
+    );
 
-    // const getProductBrand = async () => {
-    //     const res = await productBrand(undefined).unwrap();
-    //     const data = res.data.map((item: { _id: string; name: string }) => {
-    //         return {
-    //             label: item.name,
-    //             value: item._id,
-    //         };
-    //     });
-    //     return data;
-    // };
+    const brandOptions = brandData?.data?.map(
+        (item: { _id: string; name: string }) => {
+            return {
+                value: item._id,
+                label: item.name,
+            };
+        },
+    );
 
-    // const getProductOccasion = async () => {
-    //     const res = await productOccasion(undefined).unwrap();
-    //     const data = res.data.map((item: { _id: string; name: string }) => {
-    //         return {
-    //             label: item.name,
-    //             value: item._id,
-    //         };
-    //     });
-    //     return data;
-    // };
+    const occasionOptions = occasionData?.data?.map(
+        (item: { _id: string; name: string }) => {
+            return {
+                value: item._id,
+                label: item.name,
+            };
+        },
+    );
 
-    // const getProductTheme = async () => {
-    //     const res = await productTheme(undefined).unwrap();
-    //     const data = res.data.map((item: { _id: string; name: string }) => {
-    //         return {
-    //             label: item.name,
-    //             value: item._id,
-    //         };
-    //     });
-    //     return data;
-    // };
+    const themeOptions = themeData?.data?.map(
+        (item: { _id: string; name: string }) => {
+            return {
+                value: item._id,
+                label: item.name,
+            };
+        },
+    );
 
-    useEffect(() => {
-        const fetchProductCategories = async () => {
-            try {
-                if (loading === true) {
-                    const tProductData = await productData(
-                        (productId as { id: string }).id,
-                    ).unwrap();
-                    // const tProductCategory = await getProductCategory();
-                    // const tProductBrand = await getProductBrand();
-                    // const tProductOccasion = await getProductOccasion();
-                    // const tProductTheme = await getProductTheme();
-                    // setProductCategories(tProductCategory);
-                    // setProductBrands(tProductBrand);
-                    // setProductOccasions(tProductOccasion);
-                    // setProductThemes(tProductTheme);
-                    setProductInfo(tProductData.data);
-                    setUpdatedProductInfo(tProductData.data);
-                }
-            } catch (error) {
-                console.error("Error fetching product categories:", error);
-            }
-        };
-        setLoading(false);
-
-        fetchProductCategories();
-    }, [loading]);
-
-    const onSubmit = async () => {
+    const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         const toastId = toast.loading("Updating Product...");
+        const updatedProductInfo = {
+            name: data.name,
+            price: Number(data.price),
+            quantity: Number(data.quantity),
+            description: data.description,
+            category: data.category,
+            brand: data.brand,
+            occasion: data.occasion,
+            theme: data.theme,
+        };
+
         try {
-            if (updatedProductInfo) {
-                const error = { ...inputError };
-                if (
-                    updatedProductInfo.name === "" ||
-                    updatedProductInfo.name === undefined
-                ) {
-                    console.log("name");
-                    error["name"] = {
-                        error: true,
-                        message: "Product name is required.",
-                    };
-                } else {
-                    error["name"] = {
-                        error: false,
-                        message: "",
-                    };
-                }
-
-                if (
-                    updatedProductInfo.price === "" ||
-                    updatedProductInfo.price === undefined
-                ) {
-                    error["price"] = {
-                        error: true,
-                        message: "Price is required.",
-                    };
-                } else if (!/^\d+(\.\d+)?$/.test(updatedProductInfo.price)) {
-                    error["price"] = {
-                        error: true,
-                        message:
-                            "Price must be a number. Please enter a valid price.",
-                    };
-                } else if (parseFloat(updatedProductInfo.price) <= 0) {
-                    error["price"] = {
-                        error: true,
-                        message:
-                            "Price must be greater than 0. Please enter a valid price.",
-                    };
-                } else {
-                    error["price"] = {
-                        error: false,
-                        message: "",
-                    };
-                }
-
-                if (
-                    updatedProductInfo.quantity === "" ||
-                    updatedProductInfo.quantity === undefined
-                ) {
-                    error["quantity"] = {
-                        error: true,
-                        message: "Product Quantity is required.",
-                    };
-                } else if (!/^\d+$/.test(updatedProductInfo.quantity)) {
-                    error["quantity"] = {
-                        error: true,
-                        message:
-                            "Product Quantity must be a number. Please enter a valid quantity.",
-                    };
-                } else if (parseInt(updatedProductInfo.quantity) <= 0) {
-                    error["quantity"] = {
-                        error: true,
-                        message: "Product Quantity must be greater than 0.",
-                    };
-                } else {
-                    error["quantity"] = {
-                        error: false,
-                        message: "",
-                    };
-                }
-
-                if (
-                    updatedProductInfo.description === "" ||
-                    updatedProductInfo.description === undefined
-                ) {
-                    error["description"] = {
-                        error: true,
-                        message: "Product description is required.",
-                    };
-                } else {
-                    error["description"] = {
-                        error: false,
-                        message: "",
-                    };
-                }
-
-                // if (updatedProductInfo.category === "" || updatedProductInfo.category === undefined) {
-                //     error["category"] = {
-                //         error: true,
-                //         message: "Product category is required.",
-                //     };
-                // } else {
-                //     error["category"] = {
-                //         error: false,
-                //         message: "",
-                //     };
-                // }
-
-                // if (updatedProductInfo.brand === "" || updatedProductInfo.brand === undefined) {
-                //     error["brand"] = {
-                //         error: true,
-                //         message: "Product brand is required.",
-                //     };
-                // } else {
-                //     error["brand"] = {
-                //         error: false,
-                //         message: "",
-                //     };
-                // }
-
-                // if (updatedProductInfo.occasion === "" || updatedProductInfo.occasion === undefined) {
-                //     error["occasion"] = {
-                //         error: true,
-                //         message: "Product occasion is required.",
-                //     };
-                // } else {
-                //     error["occasion"] = {
-                //         error: false,
-                //         message: "",
-                //     };
-                // }
-
-                // if (updatedProductInfo.theme === "" || updatedProductInfo.theme === undefined) {
-                //     error["theme"] = {
-                //         error: true,
-                //         message: "Product theme is required.",
-                //     };
-                // } else {
-                //     error["theme"] = {
-                //         error: false,
-                //         message: "",
-                //     };
-                // }
-
-                setInputError(error);
-
-                const hasError = Object.values(error).some(
-                    (item) => item.error,
-                );
-
-                if (!hasError) {
-                    const productInfoPayload = {
-                        name: updatedProductInfo.name,
-                        price: parseFloat(updatedProductInfo.price),
-                        quantity: parseInt(updatedProductInfo.quantity),
-                        description: updatedProductInfo.description,
-                    };
-                    console.log(productInfo);
-                    const res = await updateProduct({
-                        id: (productId as { id: string }).id,
-                        productInfo: productInfoPayload,
-                    }).unwrap();
-                    console.log(res);
-
-                    if (res.success === true) {
-                        toast.success("Product Updated Successfully", {
-                            id: toastId,
-                            duration: 2000,
-                        });
-                        navigate("/gift-products/gift-list");
-                    } else {
-                        toast.error(res.message || "Failed to update product", {
-                            id: toastId,
-                            duration: 2000,
-                        });
-                    }
-                } else {
-                    toast.error("Please fill all required fields", {
-                        id: toastId,
-                        duration: 2000,
-                    });
-                }
+            const res = await updateProduct({
+                id: param?.id,
+                productInfo: updatedProductInfo,
+            }).unwrap();
+            if (res.success === true) {
+                toast.success(res.message || "Product updated successfully", {
+                    id: toastId,
+                    duration: 2000,
+                });
+                navigate("/gift-products/gift-list");
+            } else {
+                toast.error(res.message || "Failed to update product", {
+                    id: toastId,
+                    duration: 2000,
+                });
             }
         } catch (error: any) {
-            console.error("Error updating product:", error);
             toast.error(error.data.message || "Failed to update product", {
                 id: toastId,
                 duration: 2000,
@@ -317,127 +121,104 @@ const EditProduct = () => {
         }
     };
 
-    const cancelUpdate = () => {
-        navigate("/gift-products/gift-list");
-    };
-
     return (
-        <div className="flex flex-col justify-start bg-white p-5">
-            <div>
-                <h2 className="text-center text-2xl">Update Product</h2>
-            </div>
-            <div className="flex flex-col justify-start gap-4">
-                <div className="flex flex-col justify-start gap-1">
-                    <label className="text-[var(--secondary-color)] block mb-1 text-[16px]">
-                        Product Name
-                    </label>
-                    <input
-                        type="string"
-                        id="name"
-                        name="name"
-                        defaultValue={updatedProductInfo.name}
-                        onChange={(e) => {
-                            setUpdatedProductInfo({
-                                ...productInfo,
-                                name: e.target.value,
-                            });
-                        }}
-                        placeholder="Enter Product Name"
-                        className="w-full py-2 px-3 rounded-lg border border-[#e4dfdf] focus:outline-none focus:ring-1 focus:ring-[var(--secondary-color)]"
-                    />
-                    <label className="text-red-500">
-                        {inputError.name.error ? inputError.name.message : ""}
-                    </label>
+        <div className="flex flex-col justify-start gap-4">
+            {isProductDataLoading === false ? (
+                <>
+                    <div>
+                        <h2 className="text-center bg-white py-3 text-3xl font-bold rounded">
+                            Update Product
+                        </h2>
+                    </div>
+                    <div className="bg-white px-5 py-3 rounded text-[16px]">
+                        <GForm
+                            onSubmit={onSubmit}
+                            resolver={zodResolver(productSchema)}
+                            defaultValues={convertNumbersToStrings(
+                                productData?.data,
+                            )}
+                            disableReset={true}
+                        >
+                            <GInput
+                                type="text"
+                                name="name"
+                                placeholder="Enter product name"
+                                label="Product Name"
+                            />
+                            <GInput
+                                type="text"
+                                name="price"
+                                placeholder="Enter price"
+                                label="Price"
+                            />
+                            <GInput
+                                type="text"
+                                name="quantity"
+                                placeholder="Enter Product Quantity"
+                                label="Product Quantity"
+                            />
+                            <GTextBox
+                                type="text"
+                                name="description"
+                                placeholder="Enter Product Details"
+                                label="Product Details"
+                            />
+                            <GSelect
+                                name="category"
+                                placeholder="Select Product Category"
+                                label="Product Category"
+                                mode="multiple"
+                                options={categoryOptions}
+                                disabled={isCategoryDataLoading}
+                            />
+                            <GSelect
+                                name="brand"
+                                placeholder="Select Product Brand"
+                                label="Product Brand"
+                                options={brandOptions}
+                                disabled={isBrandDataLoading}
+                            />
+                            <GSelect
+                                name="occasion"
+                                placeholder="Select Product Suitable Occasion"
+                                label="Product Suitable Occasion"
+                                mode="multiple"
+                                options={occasionOptions}
+                                disabled={isOccasionDataLoading}
+                            />
+                            <GSelect
+                                name="theme"
+                                placeholder="Select Product Theme"
+                                label="Product Theme"
+                                mode="multiple"
+                                options={themeOptions}
+                                disabled={isThemeDataLoading}
+                            />
+                            <div className="flex justify-center gap-2">
+                                <button
+                                    type="button"
+                                    className="bg-[var(--secondary-color)] text-[var(--primary-color)] px-5 py-2 rounded-lg"
+                                    onClick={() =>
+                                        navigate("/gift-products/gift-list")
+                                    }
+                                >
+                                    Discard
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="bg-[var(--secondary-color)] text-[var(--primary-color)] px-5 py-2 rounded-lg"
+                                >
+                                    Update Product
+                                </button>
+                            </div>
+                        </GForm>
+                    </div>
+                </>
+            ) : (
+                <div className="h-[100px] flex justify-center items-center">
+                    <Spin size="large" />
                 </div>
-                <div className="flex flex-col justify-start gap-1">
-                    <label className="text-[var(--secondary-color)] block mb-1 text-[16px]">
-                        Product Price
-                    </label>
-                    <input
-                        type="number"
-                        id="name"
-                        name="price"
-                        defaultValue={updatedProductInfo.price}
-                        onChange={(e) => {
-                            setUpdatedProductInfo({
-                                ...productInfo,
-                                price: e.target.value,
-                            });
-                        }}
-                        placeholder="Enter Product Price"
-                        className="w-full py-2 px-3 rounded-lg border border-[#e4dfdf] focus:outline-none focus:ring-1 focus:ring-[var(--secondary-color)]"
-                    />
-                    <label className="text-red-500">
-                        {inputError.price.error ? inputError.price.message : ""}
-                    </label>
-                </div>
-                <div className="flex flex-col justify-start gap-1">
-                    <label className="text-[var(--secondary-color)] block mb-1 text-[16px]">
-                        Product Quantity
-                    </label>
-                    <input
-                        type="number"
-                        id="quantity"
-                        name="quantity"
-                        value={updatedProductInfo.quantity}
-                        onChange={(e) => {
-                            setUpdatedProductInfo({
-                                ...productInfo,
-                                quantity: e.target.value,
-                            });
-                        }}
-                        placeholder="Enter Product Quantity"
-                        className="w-full py-2 px-3 rounded-lg border border-[#e4dfdf] focus:outline-none focus:ring-1 focus:ring-[var(--secondary-color)]"
-                    />
-                    <label className="text-red-500">
-                        {inputError.quantity.error
-                            ? inputError.quantity.message
-                            : ""}
-                    </label>
-                </div>
-                <div className="flex flex-col justify-start gap-1">
-                    <label className="text-[var(--secondary-color)] block mb-1 text-[16px]">
-                        Product Details
-                    </label>
-                    <TextArea
-                        id="description"
-                        name="description"
-                        value={updatedProductInfo.description}
-                        onChange={(e) => {
-                            setUpdatedProductInfo({
-                                ...productInfo,
-                                description: e.target.value,
-                            });
-                        }}
-                        placeholder="Enter Product Details"
-                        autoSize={{ minRows: 3, maxRows: 10 }}
-                        className="w-full py-2 px-3 rounded-lg border border-[#e4dfdf] focus:outline-none focus:ring-1 focus:ring-[var(--secondary-color)]"
-                    />
-                    <label className="text-red-500">
-                        {inputError.description.error
-                            ? inputError.description.message
-                            : ""}
-                    </label>
-                </div>
-                <div className="flex flex-col md:flex-row justify-center gap-2">
-                    <button
-                        onClick={() => {
-                            cancelUpdate();
-                        }}
-                        className="bg-[var(--secondary-color)] text-[var(--primary-color)] w-full py-2 rounded-lg md:w-[150px]"
-                    >
-                        Discard
-                    </button>
-                    <button
-                        onClick={() => {
-                            onSubmit();
-                        }}
-                        className="bg-[var(--secondary-color)] text-[var(--primary-color)] w-full py-2 rounded-lg md:w-[150px]"
-                    >
-                        Update Product
-                    </button>
-                </div>
-            </div>
+            )}
         </div>
     );
 };

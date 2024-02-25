@@ -1,6 +1,15 @@
-import { Button, Input, Modal } from "antd";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Button, Modal } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import GForm from "../../components/form/GForm";
+import GInput from "../../components/form/GInput";
+import { FieldValues, SubmitHandler } from "react-hook-form";
+import { sellProductSchema } from "../../Schemas/sell.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useDeleteSingleProductMutation } from "../../redux/feature/product/productManagement.api";
+import { toast } from "sonner";
+import { useSellProductMutation } from "../../redux/feature/SaleInfo/sellManagement.api";
 
 type TProductProps = {
     _id: string;
@@ -12,7 +21,7 @@ type TProductProps = {
     category: {
         _id: string;
         name: string;
-    };
+    }[];
     brand: {
         _id: string;
         name: string;
@@ -20,67 +29,43 @@ type TProductProps = {
     occasion: {
         _id: string;
         name: string;
-    };
+    }[];
     theme: {
         _id: string;
         name: string;
-    };
+    }[];
     createdAt: string;
     updatedAt: string;
 };
 
 type TProductDataProps = {
     productData: [TProductProps];
-    handleDeleteProduct: (id: string) => void;
-    handleSellProduct: (
-        name: string,
-        productId: string,
-        quantity: number,
-    ) => Promise<boolean>;
-    showSellModal: boolean;
-    setShowSellModal: (value: boolean) => void;
 };
 
-const ProductGridView = ({
-    productData,
-    handleDeleteProduct,
-    handleSellProduct,
-    showSellModal,
-    setShowSellModal,
-}: TProductDataProps) => {
-    const [loading, setLoading] = useState(false);
+const ProductGridView = ({ productData }: TProductDataProps) => {
+    const [deleteProduct] = useDeleteSingleProductMutation();
 
-    const [name, setName] = useState("");
-    const [productId, setProductId] = useState("");
-    const [quantity, setQuantity] = useState(1);
+    const handleDeleteProduct = async (id: string) => {
+        const toastId = toast.loading("Deleting Product...");
+        try {
+            const res = await deleteProduct(id).unwrap();
 
-    const handleCancel = () => {
-        setName("");
-        setQuantity(1);
-        setProductId("");
-        setShowSellModal(false);
-    };
-
-    const handleOk = async () => {
-        setLoading(true);
-        const res = await handleSellProduct(name, productId, quantity);
-        if (res) {
-            setLoading(false);
-            handleCancel();
-            setShowSellModal(false);
-        } else {
-            setLoading(false);
-        }
-    };
-
-    const changeQuantity = (type: string) => {
-        if (type === "increase") {
-            setQuantity(quantity + 1);
-        }
-        if (type === "decrease") {
-            if (quantity !== 1) {
-                setQuantity(quantity - 1);
+            if (res.success === true) {
+                toast.success(res.message || "Product deleted successfully", {
+                    id: toastId,
+                    duration: 2000,
+                });
+            } else {
+                toast.error(res.message || "Failed to delete product", {
+                    id: toastId,
+                    duration: 2000,
+                });
             }
+        } catch (error: any) {
+            toast.error(error.data.message || "Failed to add product", {
+                id: toastId,
+                duration: 2000,
+            });
         }
     };
 
@@ -122,88 +107,10 @@ const ProductGridView = ({
                                 </div>
                                 <div className="flex flex-row justify-between w-full gap-2">
                                     <div className="w-full">
-                                        <button
-                                            onClick={() => {
-                                                setShowSellModal(true);
-                                                setProductId(product._id);
-                                            }}
-                                            className="bg-[var(--secondary-color)] text-[var(--primary-color)] text-center rounded-md p-2 w-full font-bold"
-                                        >
-                                            Sell
-                                        </button>
+                                        <SellProductModal
+                                            productInfo={product}
+                                        />
                                     </div>
-                                    {showSellModal && (
-                                        <Modal
-                                            open={showSellModal}
-                                            title={`Sell the product - ${product.name}`}
-                                            onOk={handleOk}
-                                            onCancel={handleCancel}
-                                            footer={[
-                                                <Button
-                                                    key="back"
-                                                    onClick={handleCancel}
-                                                >
-                                                    Close
-                                                </Button>,
-                                                <Button
-                                                    key="link"
-                                                    loading={loading}
-                                                    onClick={handleOk}
-                                                    className="bg-[var(--secondary-color)] text-[var(--primary-color)] m-0 rounded-md"
-                                                >
-                                                    Buy
-                                                </Button>,
-                                            ]}
-                                        >
-                                            <div className="flex flex-col gap-2">
-                                                <div>
-                                                    <div className="text-xl p-2">
-                                                        Name
-                                                    </div>
-                                                    <Input
-                                                        type="text"
-                                                        id="name"
-                                                        placeholder="Enter buyer name"
-                                                        value={name}
-                                                        onChange={(e) =>
-                                                            setName(
-                                                                e.target.value,
-                                                            )
-                                                        }
-                                                        className="m-2 p-2"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <div className="text-xl p-2">
-                                                        Quantity
-                                                    </div>
-                                                    <div className="flex flex-row gap-3 justify-start items-center text-lg">
-                                                        <button
-                                                            onClick={() =>
-                                                                changeQuantity(
-                                                                    "decrease",
-                                                                )
-                                                            }
-                                                            className="bg-gray-200 hover:bg-gray-400 px-2 py-1 text-xl m-2"
-                                                        >
-                                                            -
-                                                        </button>
-                                                        <span>{quantity}</span>
-                                                        <button
-                                                            onClick={() =>
-                                                                changeQuantity(
-                                                                    "increase",
-                                                                )
-                                                            }
-                                                            className="bg-gray-200 hover:bg-gray-400 px-2 py-1 text-xl m-2"
-                                                        >
-                                                            +
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </Modal>
-                                    )}
                                     <Link
                                         to={`/gift-products/edit/${product._id}`}
                                     >
@@ -257,6 +164,131 @@ const ProductGridView = ({
                     </div>
                 )}
             </div>
+        </div>
+    );
+};
+
+const SellProductModal = ({ productInfo }: { productInfo: TProductProps }) => {
+    const [sellProduct] = useSellProductMutation();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+
+    const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+        const toastId = toast.loading("Selling ...");
+        const sellInfo = {
+            buyerName: data.buyerName,
+            quantity: Number(data.quantity),
+            productId: productInfo._id,
+        };
+        console.log(sellInfo);
+
+        try {
+            const res = await sellProduct(sellInfo).unwrap();
+            if (res.success === true) {
+                toast.success(res.message || "Product selling successfully", {
+                    id: toastId,
+                    duration: 2000,
+                });
+                setIsModalOpen(false);
+            } else {
+                toast.error(res.message || "Failed to sell product", {
+                    id: toastId,
+                    duration: 2000,
+                });
+            }
+        } catch (error: any) {
+            toast.error(error.data.message || "Failed to sell product", {
+                id: toastId,
+                duration: 2000,
+            });
+        }
+    };
+
+    return (
+        <div>
+            <button
+                onClick={showModal}
+                className="bg-[var(--secondary-color)] text-[var(--primary-color)] text-center rounded-md p-2 w-full font-bold"
+            >
+                Sell
+            </button>
+            <Modal
+                title={`Sell the product`}
+                open={isModalOpen}
+                onCancel={handleCancel}
+                footer={null}
+            >
+                <div className="my-5 text-[12px] bg-slate-300 px-3 py-2 font-medium">
+                    <h4>Product Name: {productInfo.name}</h4>
+                    <h4>
+                        Price: &#2547; {}
+                        {productInfo.price} x 1
+                    </h4>
+                    <h4>Available Quantity: {productInfo.quantity}</h4>
+                </div>
+                <GForm
+                    onSubmit={onSubmit}
+                    resolver={zodResolver(sellProductSchema)}
+                >
+                    <GInput
+                        type="text"
+                        name="buyerName"
+                        placeholder="Enter Buyer Name"
+                        label="Buyer Name"
+                    />
+                    <GInput
+                        type="number"
+                        name="quantity"
+                        placeholder="Enter Quantity"
+                        label="Quantity"
+                    />
+                    <div className="flex justify-end my-5">
+                        <Button
+                            htmlType="submit"
+                            className="bg-[var(--secondary-color)] min-w-[100px] text-[var(--primary-color)] m-0 rounded-md"
+                        >
+                            Sell
+                        </Button>
+                    </div>
+                </GForm>
+                {/* <div className="flex flex-col gap-2">
+                    <div>
+                        <div className="text-xl p-2">Name</div>
+                        <Input
+                            type="text"
+                            id="name"
+                            placeholder="Enter buyer name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="m-2 p-2"
+                        />
+                    </div>
+                    <div>
+                        <div className="text-xl p-2">Quantity</div>
+                        <div className="flex flex-row gap-3 justify-start items-center text-lg">
+                            <button
+                                onClick={() => changeQuantity("decrease")}
+                                className="bg-gray-200 hover:bg-gray-400 px-2 py-1 text-xl m-2"
+                            >
+                                -
+                            </button>
+                            <span>{quantity}</span>
+                            <button
+                                onClick={() => changeQuantity("increase")}
+                                className="bg-gray-200 hover:bg-gray-400 px-2 py-1 text-xl m-2"
+                            >
+                                +
+                            </button>
+                        </div>
+                    </div>
+                </div> */}
+            </Modal>
         </div>
     );
 };

@@ -21,18 +21,18 @@ export const productSchema = z.object({
     description: z.string({
         required_error: "Description is required",
     }),
-    imageURL: z.string().optional(),
-    category: z.string({
-        required_error: "Category is required",
+    imageURL: z.any().optional(),
+    category: z.array(z.string()).min(1, {
+        message: "Category is required",
     }),
     brand: z.string({
         required_error: "Brand is required",
     }),
-    occasion: z.string({
-        required_error: "Occasion is required",
+    occasion: z.array(z.string()).min(1, {
+        message: "Occasion is required",
     }),
-    theme: z.string({
-        required_error: "Theme is required",
+    theme: z.array(z.string()).min(1, {
+        message: "Theme is required",
     }),
     isDeleted: z.boolean().optional(),
 });

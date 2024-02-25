@@ -11,6 +11,7 @@ import {
 type TFormConfig = {
     defaultValues?: Record<string, any>;
     resolver?: any;
+    disableReset?: boolean;
 };
 
 type TFormProps = {
@@ -18,7 +19,13 @@ type TFormProps = {
     children: ReactNode;
 } & TFormConfig;
 
-const GForm = ({ onSubmit, children, defaultValues, resolver }: TFormProps) => {
+const GForm = ({
+    onSubmit,
+    children,
+    defaultValues,
+    resolver,
+    disableReset,
+}: TFormProps) => {
     const formConfig: TFormConfig = {};
 
     if (defaultValues) {
@@ -33,7 +40,7 @@ const GForm = ({ onSubmit, children, defaultValues, resolver }: TFormProps) => {
 
     const submit: SubmitHandler<FieldValues> = (data) => {
         onSubmit(data);
-        methods.reset();
+        if (!disableReset) methods.reset();
     };
 
     return (
