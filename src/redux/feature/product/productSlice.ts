@@ -12,10 +12,10 @@ type TSearchQueryState = {
     name: string;
     minPrice: number;
     maxPrice: number;
-    category: string[];
-    brand: string[];
-    occasion: string[];
-    theme: string[];
+    category: string;
+    brand: string;
+    occasion: string;
+    theme: string;
 };
 
 type TProduct = {
@@ -34,10 +34,10 @@ const initialState: TProduct = {
         name: "",
         minPrice: 0,
         maxPrice: -1,
-        category: [],
-        brand: [],
-        occasion: [],
-        theme: [],
+        category: "",
+        brand: "",
+        occasion: "",
+        theme: "",
     },
 };
 

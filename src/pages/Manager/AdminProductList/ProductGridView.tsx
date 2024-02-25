@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Link } from "react-router-dom";
-import { useDeleteSingleProductMutation } from "../../redux/feature/product/productManagement.api";
+import { useDeleteSingleProductMutation } from "../../../redux/feature/product/productManagement.api";
 import { toast } from "sonner";
-import { TProduct } from "../../types";
+import { TProduct } from "../../../types";
 import ProductSellModal from "./ProductSellModal";
 
 type TProductDataProps = {

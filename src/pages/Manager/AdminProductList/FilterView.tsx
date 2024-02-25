@@ -7,16 +7,16 @@ import {
     useGetAllCategoryQuery,
     useGetAllOccasionQuery,
     useGetAllThemeQuery,
-} from "../../redux/feature/product/productManagement.api";
+} from "../../../redux/feature/product/productManagement.api";
 import {
     setSearchQuery,
     useSearchParameter,
-} from "../../redux/feature/product/productSlice";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import GForm from "../../components/form/GForm";
+} from "../../../redux/feature/product/productSlice";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import GForm from "../../../components/form/GForm";
 import { FieldValues, SubmitHandler } from "react-hook-form";
-import GInput from "../../components/form/GInput";
-import GRadioInput from "../../components/form/GRadioInput";
+import GInput from "../../../components/form/GInput";
+import GRadioInput from "../../../components/form/GRadioInput";
 
 const filterObject = (obj: { [s: string]: unknown } | ArrayLike<unknown>) => {
     return Object.fromEntries(

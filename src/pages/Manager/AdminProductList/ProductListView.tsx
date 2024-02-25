@@ -2,10 +2,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useAppDispatch } from "../../redux/hooks";
-import { setProduct } from "../../redux/feature/product/productSlice";
-import { useDeleteMultipleProductsMutation } from "../../redux/feature/product/productManagement.api";
-import { TProduct } from "../../types";
+import { useAppDispatch } from "../../../redux/hooks";
+import { setProduct } from "../../../redux/feature/product/productSlice";
+import { useDeleteMultipleProductsMutation } from "../../../redux/feature/product/productManagement.api";
+import { TProduct } from "../../../types";
 import ProductSellModal from "./ProductSellModal";
 
 type TProductDataProps = {
