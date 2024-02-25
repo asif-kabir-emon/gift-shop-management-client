@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import "./registration-style.css";
 import GForm from "../../components/form/GForm";
 import { FieldValues } from "react-hook-form";
-import GInputNormal from "../../components/form/GInputNormal";
-import GInputPassword from "../../components/form/GInputPassword";
+import GInput from "../../components/form/GInput";
+import GPassword from "../../components/form/GPassword";
 import { useRegisterMutation } from "../../redux/feature/auth/authApi";
 import { toast } from "sonner";
 
@@ -62,19 +62,19 @@ const Registration = () => {
                 </div>
                 <GForm onSubmit={onSubmit}>
                     <div className="flex flex-col gap-3">
-                        <GInputNormal
+                        <GInput
                             type="text"
                             name="name"
                             placeholder="Enter your name"
                             label="Name"
                         />
-                        <GInputNormal
+                        <GInput
                             type="email"
                             name="email"
                             placeholder="Enter your email"
                             label="Email"
                         />
-                        <GInputPassword
+                        <GPassword
                             type="password"
                             name="password"
                             placeholder="Enter your password"

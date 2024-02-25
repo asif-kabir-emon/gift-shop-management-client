@@ -3,7 +3,7 @@ import App from "../App";
 import Login from "../pages/Login";
 import Registration from "../pages/Registration";
 import HiddenRouteAfterLogin from "../components/layout/HiddenRouteAfterLogin";
-import AddProduct from "../pages/AddProduct";
+import AddProduct from "../pages/Manager/AddProduct";
 import ProductList from "../pages/ProductList";
 import EditProduct from "../pages/EditProduct";
 import SellHistory from "../pages/SellHistory";

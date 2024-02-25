@@ -3,8 +3,8 @@ import { Divider } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import "./login-style.css";
 import GForm from "../../components/form/GForm";
-import GInputNormal from "../../components/form/GInputNormal";
-import GInputPassword from "../../components/form/GInputPassword";
+import GInput from "../../components/form/GInput";
+import GPassword from "../../components/form/GPassword";
 import { FieldValues } from "react-hook-form";
 import { useAppDispatch } from "../../redux/hooks";
 import { useLoginMutation } from "../../redux/feature/auth/authApi";
@@ -71,13 +71,13 @@ const Login = () => {
                 </div>
                 <GForm onSubmit={onSubmit}>
                     <div className="flex flex-col gap-3">
-                        <GInputNormal
+                        <GInput
                             type="email"
                             name="email"
                             placeholder="Enter your email"
                             label="Email"
                         />
-                        <GInputPassword
+                        <GPassword
                             type="password"
                             name="password"
                             placeholder="Enter your password"
