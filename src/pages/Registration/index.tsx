@@ -3,46 +3,40 @@ import { Divider } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import "./registration-style.css";
 import GForm from "../../components/form/GForm";
-import { FieldValues } from "react-hook-form";
+import { FieldValues, SubmitHandler } from "react-hook-form";
 import GInput from "../../components/form/GInput";
 import GPassword from "../../components/form/GPassword";
 import { useRegisterMutation } from "../../redux/feature/auth/authApi";
 import { toast } from "sonner";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registrationSchema } from "../../Schemas/auth.schema";
 
 const Registration = () => {
     const navigate = useNavigate();
     const [register] = useRegisterMutation();
-    const onSubmit = async (data: FieldValues) => {
-        const toastId = toast.loading("Signing Up");
-        try {
-            const userInfo = {
-                name: data.name,
-                email: data.email,
-                password: data.password,
-            };
-            console.log(userInfo);
 
-            if (
-                userInfo.name === "" ||
-                userInfo.email === "" ||
-                userInfo.password === ""
-            ) {
-                console.log("Please fill all required Fields");
+    const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+        const toastId = toast.loading("Signing Up");
+        const userInfo = {
+            name: data.name,
+            email: data.email,
+            password: data.password,
+        };
+        console.log(userInfo);
+        try {
+            const res = await register(userInfo).unwrap();
+            console.log(res);
+            if (res.success === false) {
+                toast.error(res.message, {
+                    id: toastId,
+                    duration: 2000,
+                });
             } else {
-                const res = await register(userInfo).unwrap();
-                console.log(res);
-                if (res.success === false) {
-                    toast.error(res.message, {
-                        id: toastId,
-                        duration: 2000,
-                    });
-                } else {
-                    toast.success(`${res.message}. Please Login.`, {
-                        id: toastId,
-                        duration: 2000,
-                    });
-                    navigate("/login");
-                }
+                toast.success(`${res.message}. Please Login.`, {
+                    id: toastId,
+                    duration: 2000,
+                });
+                navigate("/login");
             }
         } catch (error: any) {
             toast.error(error.data.message || "Failed to Login", {
@@ -60,7 +54,11 @@ const Registration = () => {
                         Sign Up
                     </h1>
                 </div>
-                <GForm onSubmit={onSubmit}>
+                <GForm
+                    onSubmit={onSubmit}
+                    disableReset={true}
+                    resolver={zodResolver(registrationSchema)}
+                >
                     <div className="flex flex-col gap-3">
                         <GInput
                             type="text"

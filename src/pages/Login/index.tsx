@@ -11,11 +11,16 @@ import { useLoginMutation } from "../../redux/feature/auth/authApi";
 import { setUser } from "../../redux/feature/auth/authSlice";
 import { toast } from "sonner";
 import { verifyToken } from "../../utils/verifyToken";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema } from "../../Schemas/auth.schema";
+import { TUser } from "../../types";
 
 const Login = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+
     const [login] = useLoginMutation();
+
     const onSubmit = async (data: FieldValues) => {
         const toastId = toast.loading("Logging in");
         try {
@@ -23,37 +28,26 @@ const Login = () => {
                 email: data.email,
                 password: data.password,
             };
-            // console.log(userInfo);
 
-            if (userInfo.email === "" || userInfo.password === "") {
-                toast.error("Please fill all required Fields", {
+            const res = await login(userInfo).unwrap();
+
+            if (res.success) {
+                const user = verifyToken(res.data.accessToken);
+                dispatch(
+                    setUser({
+                        user: user,
+                        token: res.data.accessToken,
+                    }),
+                );
+                navigate(`/${(user as TUser)?.role}/dashboard`);
+                toast.success(res.message, { id: toastId, duration: 2000 });
+            } else {
+                toast.error(res.message, {
                     id: toastId,
                     duration: 2000,
                 });
-                return;
-            } else {
-                const res = await login(userInfo).unwrap();
-                // console.log(res.data);
-
-                if (res.data.success === false) {
-                    toast.error(res.message, {
-                        id: toastId,
-                        duration: 2000,
-                    });
-                } else {
-                    const user = await verifyToken(res.data.accessToken);
-                    dispatch(
-                        setUser({
-                            user: user,
-                            token: res.data.accessToken,
-                        }),
-                    );
-                    toast.success(res.message, { id: toastId, duration: 2000 });
-                    navigate("/");
-                }
             }
         } catch (error: any) {
-            // console.log(error);
             toast.error(error.data.message || "Failed to Login", {
                 id: toastId,
                 duration: 2000,
@@ -69,7 +63,11 @@ const Login = () => {
                         Sign In
                     </h1>
                 </div>
-                <GForm onSubmit={onSubmit}>
+                <GForm
+                    onSubmit={onSubmit}
+                    resolver={zodResolver(loginSchema)}
+                    disableReset={true}
+                >
                     <div className="flex flex-col gap-3">
                         <GInput
                             type="email"

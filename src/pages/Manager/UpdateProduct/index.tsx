@@ -201,7 +201,7 @@ const UpdateProduct = () => {
                                     type="button"
                                     className="bg-[var(--secondary-color)] text-[var(--primary-color)] px-5 py-2 rounded-lg"
                                     onClick={() =>
-                                        navigate("/gift-products/gift-list")
+                                        navigate("/manager/gift-list")
                                     }
                                 >
                                     Discard

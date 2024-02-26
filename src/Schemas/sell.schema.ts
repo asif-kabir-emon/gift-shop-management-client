@@ -12,4 +12,7 @@ export const sellProductSchema = z.object({
         .refine((val) => Number(val) > 0, {
             message: "Quantity must be greater than 0",
         }),
+    sellDate: z.any({
+        required_error: "Date is required",
+    }),
 });

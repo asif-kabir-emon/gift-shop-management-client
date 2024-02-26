@@ -205,7 +205,9 @@ const CopyProduct = () => {
                                 <button
                                     type="button"
                                     className="bg-[var(--secondary-color)] text-[var(--primary-color)] px-5 py-2 rounded-lg"
-                                    onClick={() => navigate("/")}
+                                    onClick={() =>
+                                        navigate("/manager/gift-list")
+                                    }
                                 >
                                     Cancel
                                 </button>

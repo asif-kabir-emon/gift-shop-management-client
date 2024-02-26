@@ -1,3 +1,4 @@
+import Dashboard from "../pages/Dashboard";
 import AddProduct from "../pages/Manager/AddProduct";
 import BulkDelete from "../pages/Manager/BulkDelete";
 import CopyProduct from "../pages/Manager/CopyProduct";
@@ -7,14 +8,24 @@ import SellHistory from "../pages/SellHistory";
 
 export const managerPaths = [
     {
-        name: "Gift List",
-        path: "gift-list",
-        element: <ManagerProductList />,
+        name: "Dashboard",
+        path: "dashboard",
+        element: <Dashboard />,
     },
     {
-        name: "Add Gift",
-        path: "add-gift",
-        element: <AddProduct />,
+        name: "Gift Management",
+        children: [
+            {
+                name: "Gift List",
+                path: "gift-list",
+                element: <ManagerProductList />,
+            },
+            {
+                name: "Add Gift",
+                path: "add-gift",
+                element: <AddProduct />,
+            },
+        ],
     },
     {
         path: "update-gift/:productId",

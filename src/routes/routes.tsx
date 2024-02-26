@@ -7,12 +7,18 @@ import { routeGenerator } from "../utils/routeGenerator";
 import { managerPaths } from "./manager.routes";
 import { sellerPaths } from "./seller.routes";
 import ProtectedRoute from "../components/layout/ProtectedRoute";
+import Dashboard from "../pages/Dashboard";
 
 const router = createBrowserRouter([
     {
         path: "/",
         element: <App />,
-        children: [],
+        children: [
+            {
+                path: "/",
+                element: <Dashboard />,
+            },
+        ],
     },
     {
         path: "/manager",

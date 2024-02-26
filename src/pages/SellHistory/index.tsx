@@ -1,68 +1,62 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { useGetSellInfoMutation } from "../../redux/feature/SaleInfo/saleInfoApi";
 import { Spin } from "antd";
+import { useGetSellInfoQuery } from "../../redux/feature/SaleInfo/sellManagement.api";
+import moment from "moment";
 
 const SellHistory = () => {
-    const [sellHistory] = useGetSellInfoMutation();
-    const [sellInfo, setSellInfo] = useState([]);
+    const [dateRange, setDateRange] = useState({
+        startDate: moment().subtract(1, "days").format("YYYY-MM-DD"),
+        endDate: moment().format("YYYY-MM-DD"),
+    });
+    const { data: sellHistory, isLoading: isSellHistoryLoading } =
+        useGetSellInfoQuery(dateRange, {
+            refetchOnMountOrArgChange: true,
+        });
+
     const [totalSell, setTotalSell] = useState(0);
-    const [loading, setLoading] = useState(true);
     const [historyType, setHistoryType] = useState("today");
 
     useEffect(() => {
-        const fetchSellHistory = async () => {
-            try {
-                const dateRange = {
-                    startDate: "",
-                    endDate: "",
-                };
-                if (historyType === "today") {
-                    dateRange["startDate"] = new Date(
-                        new Date().setDate(new Date().getDate() - 1),
-                    ).toISOString();
-                    dateRange["endDate"] = new Date().toISOString();
-                }
-                if (historyType === "week") {
-                    dateRange["startDate"] = new Date(
-                        new Date().setDate(new Date().getDate() - 7),
-                    ).toISOString();
-                    dateRange["endDate"] = new Date().toISOString();
-                }
-                if (historyType === "month") {
-                    dateRange["startDate"] = new Date(
-                        new Date().setMonth(new Date().getMonth() - 1),
-                    ).toISOString();
-                    dateRange["endDate"] = new Date().toISOString();
-                }
-                if (historyType === "year") {
-                    dateRange["startDate"] = new Date(
-                        new Date().setFullYear(new Date().getFullYear() - 1),
-                    ).toISOString();
-                    dateRange["endDate"] = new Date().toISOString();
-                }
-                const res = await sellHistory(dateRange).unwrap();
-                setSellInfo(res.data);
-                setLoading(false);
-
-                setTotalSell(
-                    res.data.reduce(
-                        (acc: any, item: any) =>
-                            acc + item.productId.price * item.quantity,
-                        0,
-                    ),
-                );
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchSellHistory();
-    }, [historyType, loading]);
+        if (sellHistory && !isSellHistoryLoading) {
+            let total = 0;
+            sellHistory.data.forEach((item: any) => {
+                item.totalAmount
+                    ? (total += item.totalAmount)
+                    : (total += item.quantity * item.productId.price);
+            });
+            setTotalSell(total);
+        }
+    }, [isSellHistoryLoading, historyType, sellHistory]);
 
     const handleHistoryType = (type: string) => {
         setHistoryType(type);
-        setLoading(true);
+
+        if (type === "today") {
+            setDateRange({
+                startDate: moment().subtract(1, "days").format("YYYY-MM-DD"),
+                endDate: moment().format("YYYY-MM-DD"),
+            });
+        }
+        if (type === "week") {
+            setDateRange({
+                startDate: moment().subtract(7, "days").format("YYYY-MM-DD"),
+                endDate: moment().format("YYYY-MM-DD"),
+            });
+        }
+        if (type === "month") {
+            setDateRange({
+                startDate: moment().subtract(1, "months").format("YYYY-MM-DD"),
+                endDate: moment().format("YYYY-MM-DD"),
+            });
+        }
+        if (type === "year") {
+            setDateRange({
+                startDate: moment().subtract(1, "years").format("YYYY-MM-DD"),
+                endDate: moment().format("YYYY-MM-DD"),
+            });
+        }
     };
 
     return (
@@ -155,9 +149,9 @@ const SellHistory = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {loading === false ? (
-                            sellInfo.length > 0 ? (
-                                sellInfo.map((item: any) => (
+                        {isSellHistoryLoading === false ? (
+                            sellHistory.data.length > 0 ? (
+                                sellHistory.data.map((item: any) => (
                                     <tr
                                         className="text-start border-[1px] border-l-0 border-r-0 border-gray-200 hover:bg-gray-100"
                                         key={item._id}
@@ -173,8 +167,10 @@ const SellHistory = () => {
                                         </td>
                                         <td className="px-3 py-1">
                                             TK.{" "}
-                                            {item.productId.price *
-                                                item.quantity}
+                                            {item.totalAmount
+                                                ? item.totalAmount
+                                                : item.quantity *
+                                                  item.productId.price}
                                         </td>
                                     </tr>
                                 ))

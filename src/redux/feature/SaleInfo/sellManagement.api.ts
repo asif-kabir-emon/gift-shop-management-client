@@ -8,17 +8,16 @@ const SellManagement = baseApi.injectEndpoints({
                 method: "POST",
                 body: saleInfo,
             }),
+            invalidatesTags: ["products"],
         }),
-        getSellInfo: builder.mutation({
+        getSellInfo: builder.query({
             query: (query) => ({
                 url: "/sale-info/get-sale-info",
                 method: "GET",
                 params: query,
             }),
-            invalidatesTags: ["products"],
         }),
     }),
 });
 
-export const { useSellProductMutation, useGetSellInfoMutation } =
-    SellManagement;
+export const { useSellProductMutation, useGetSellInfoQuery } = SellManagement;

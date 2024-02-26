@@ -3,14 +3,22 @@ import { FieldValues, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
 import { useSellProductMutation } from "../../../redux/feature/SaleInfo/sellManagement.api";
 import { useState } from "react";
-import { TProduct } from "../../../types";
+import { TProduct, TUser } from "../../../types";
 import { Button, Modal } from "antd";
 import GForm from "../../form/GForm";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { sellProductSchema } from "../../../Schemas/sell.schema";
 import GInput from "../../form/GInput";
+import GDatePicker from "../../form/GDatePicker";
+import { useAppSelector } from "../../../redux/hooks";
+import { useCurrentToken } from "../../../redux/feature/auth/authSlice";
+import { verifyToken } from "../../../utils/verifyToken";
+import moment from "moment";
 
 const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
+    const token = useAppSelector(useCurrentToken);
+    const user = verifyToken(token as string) || {};
+
     const [sellProduct] = useSellProductMutation();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {
@@ -22,13 +30,31 @@ const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
     };
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-        const toastId = toast.loading("Selling ...");
+        if (data.quantity > productInfo.quantity) {
+            toast.error(
+                "Quantity must be less than or equal to available quantity",
+                {
+                    id: "quantity-error",
+                    duration: 2000,
+                    position: "top-right",
+                },
+            );
+            return;
+        }
+
+        const toastId = toast.loading("Selling ...", {
+            position: "top-right",
+        });
         const sellInfo = {
-            buyerName: data.buyerName,
             quantity: Number(data.quantity),
+            sellingPrice: Number(productInfo.price),
+            totalAmount: Number(data.quantity) * Number(productInfo.price),
+            sellDate: moment().format("YYYY-MM-DD"),
+            buyerName: data.buyerName,
             productId: productInfo._id,
+            sellerId: (user as TUser)?.id,
         };
-        console.log(sellInfo);
+        // console.log(sellInfo);
 
         try {
             const res = await sellProduct(sellInfo).unwrap();
@@ -77,6 +103,7 @@ const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
                 <GForm
                     onSubmit={onSubmit}
                     resolver={zodResolver(sellProductSchema)}
+                    disableReset={true}
                 >
                     <GInput
                         type="text"
@@ -89,6 +116,12 @@ const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
                         name="quantity"
                         placeholder="Enter Quantity"
                         label="Quantity"
+                    />
+                    <GDatePicker
+                        name="sellDate"
+                        label="Date"
+                        placeholder="Select Date"
+                        disabled={true}
                     />
                     <div className="flex justify-end my-5">
                         <Button
