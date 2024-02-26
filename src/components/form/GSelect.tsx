@@ -5,7 +5,9 @@ type TGSelectProps = {
     name: string;
     label: string;
     placeholder?: string;
-    options: { value: string; label: string; disabled?: boolean }[] | undefined;
+    options:
+        | { value: string | boolean; label: string; disabled?: boolean }[]
+        | undefined;
     disabled?: boolean;
     mode?: "multiple" | undefined;
 };
@@ -19,11 +21,11 @@ const GSelect = ({
     mode,
 }: TGSelectProps) => {
     return (
-        <div style={{ marginBottom: "5px" }}>
+        <div style={{ marginBottom: "10px" }}>
             <Controller
                 name={name}
                 render={({ field, fieldState: { error } }) => (
-                    <Form.Item label={label}>
+                    <Form.Item label={label} style={{ margin: "0px" }}>
                         <Select
                             mode={mode}
                             style={{ width: "100%" }}

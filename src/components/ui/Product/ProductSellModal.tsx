@@ -9,11 +9,11 @@ import GForm from "../../form/GForm";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { sellProductSchema } from "../../../Schemas/sell.schema";
 import GInput from "../../form/GInput";
-import GDatePicker from "../../form/GDatePicker";
 import { useAppSelector } from "../../../redux/hooks";
 import { useCurrentToken } from "../../../redux/feature/auth/authSlice";
 import { verifyToken } from "../../../utils/verifyToken";
 import moment from "moment";
+import GDatePickerWithCurrentDate from "../../form/GDatePickerWithCurrentDate";
 
 const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
     const token = useAppSelector(useCurrentToken);
@@ -117,7 +117,7 @@ const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
                         placeholder="Enter Quantity"
                         label="Quantity"
                     />
-                    <GDatePicker
+                    <GDatePickerWithCurrentDate
                         name="sellDate"
                         label="Date"
                         placeholder="Select Date"
