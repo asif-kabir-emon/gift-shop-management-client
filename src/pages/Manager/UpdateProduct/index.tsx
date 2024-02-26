@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { toast } from "sonner";
 import { useLoaderData, useNavigate } from "react-router";
-import GForm from "../../components/form/GForm";
-import GInput from "../../components/form/GInput";
-import GTextBox from "../../components/form/GTextBox";
-import GSelect from "../../components/form/GSelect";
+import GForm from "../../../components/form/GForm";
+import GInput from "../../../components/form/GInput";
+import GTextBox from "../../../components/form/GTextBox";
+import GSelect from "../../../components/form/GSelect";
 import {
     useGetAllBrandQuery,
     useGetAllCategoryQuery,
@@ -12,9 +12,9 @@ import {
     useGetAllThemeQuery,
     useGetProductByIdQuery,
     useUpdateProductMutation,
-} from "../../redux/feature/product/productManagement.api";
+} from "../../../redux/feature/product/productManagement.api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { productSchema } from "../../Schemas/product.schema";
+import { productSchema } from "../../../Schemas/product.schema";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import { Spin } from "antd";
 
@@ -30,7 +30,7 @@ function convertNumbersToStrings(
     return newObj;
 }
 
-const EditProduct = () => {
+const UpdateProduct = () => {
     const navigate = useNavigate();
     const param = useLoaderData() as { id: string };
     const [updateProduct] = useUpdateProductMutation();
@@ -223,4 +223,4 @@ const EditProduct = () => {
     );
 };
 
-export default EditProduct;
+export default UpdateProduct;

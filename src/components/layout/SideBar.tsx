@@ -1,49 +1,48 @@
 import { Layout, Menu } from "antd";
 const { Sider } = Layout;
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { logout, useCurrentToken } from "../../redux/feature/auth/authSlice";
+import { verifyToken } from "../../utils/verifyToken";
+import { sideBarItemsGenerator } from "../../utils/sideBarItemsGenerator";
+import { managerPaths } from "../../routes/manager.routes";
+import { sellerPaths } from "../../routes/seller.routes";
+import { TUser } from "../../types";
 
-import { Link } from "react-router-dom";
-
-const items = [
-    {
-        key: "gift-products-list",
-        title: "gift-products-list",
-        label: <Link to="/gift-products/gift-list">Gift List</Link>,
-    },
-    {
-        key: "gift-products-add",
-        title: "gift-products-add",
-        label: <Link to="/gift-products/add">Add Gift</Link>,
-    },
-    // {
-    //     key: "gift-products",
-    //     title: "gift-products",
-    //     label: "Gift Shop Management",
-    //     children: [
-    //         {
-    //             key: "gift-products-list",
-    //             title: "gift-products-list",
-    //             label: <Link to="/gift-products/gift-list">Gift List</Link>,
-    //         },
-    //         {
-    //             key: "gift-products-add",
-    //             title: "gift-products-add",
-    //             label: <Link to="/gift-products/add">Add Gift</Link>,
-    //         },
-    //     ],
-    // },
-    {
-        key: "sale-history",
-        title: "sale-history",
-        label: <Link to="/sell-history">Sell History</Link>,
-    },
-    {
-        key: "bulk-delete",
-        title: "bulk-delete",
-        label: <Link to="/bulk-delete">Bulk Delete</Link>,
-    },
-];
+const userRole = {
+    MANAGER: "manager",
+    SELLER: "seller",
+};
 
 const SideBar = () => {
+    const token = useAppSelector(useCurrentToken);
+    const dispatch = useAppDispatch();
+
+    let user;
+
+    if (token) {
+        user = verifyToken(token);
+    } else {
+        user = null;
+        dispatch(logout());
+    }
+    // console.log("user", user);
+
+    let sideBarItems;
+
+    switch ((user as TUser)?.role) {
+        case userRole.MANAGER:
+            sideBarItems = sideBarItemsGenerator(
+                managerPaths,
+                userRole.MANAGER,
+            );
+            break;
+        case userRole.SELLER:
+            sideBarItems = sideBarItemsGenerator(sellerPaths, userRole.SELLER);
+            break;
+        default:
+            break;
+    }
+
     return (
         <Sider breakpoint="lg" collapsedWidth="0">
             <div
@@ -63,7 +62,7 @@ const SideBar = () => {
                 theme="dark"
                 mode="inline"
                 defaultSelectedKeys={["4"]}
-                items={items}
+                items={sideBarItems}
             />
         </Sider>
     );

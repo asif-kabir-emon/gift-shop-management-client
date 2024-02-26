@@ -20,7 +20,7 @@ const filterObject = (obj: { [s: string]: unknown } | ArrayLike<unknown>) => {
     );
 };
 
-const AdminProductList = () => {
+const ManagerProductList = () => {
     const searchParameter = useAppSelector(useSearchParameter);
     const { data: productsData, isLoading } = useGetAllProductsQuery(
         filterObject(searchParameter),
@@ -79,4 +79,4 @@ const AdminProductList = () => {
     );
 };
 
-export default AdminProductList;
+export default ManagerProductList;

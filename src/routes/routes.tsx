@@ -3,51 +3,34 @@ import App from "../App";
 import Login from "../pages/Login";
 import Registration from "../pages/Registration";
 import HiddenRouteAfterLogin from "../components/layout/HiddenRouteAfterLogin";
-import AddProduct from "../pages/Manager/AddProduct";
-import ProductList from "../pages/ProductList";
-import EditProduct from "../pages/EditProduct";
-import SellHistory from "../pages/SellHistory";
-import BulkDelete from "../pages/BulkDelete";
+import { routeGenerator } from "../utils/routeGenerator";
+import { managerPaths } from "./manager.routes";
+import { sellerPaths } from "./seller.routes";
+import ProtectedRoute from "../components/layout/ProtectedRoute";
 
 const router = createBrowserRouter([
     {
         path: "/",
         element: <App />,
-        children: [
-            {
-                path: "/",
-                element: <ProductList />,
-            },
-            {
-                path: "/gift-products/add",
-                element: <AddProduct />,
-            },
-            {
-                path: "/gift-products/gift-list",
-                element: <ProductList />,
-            },
-            {
-                path: "/gift-products/edit/:id",
-                element: <EditProduct />,
-                loader: async ({ params }) => {
-                    return {
-                        id: params.id,
-                    };
-                },
-            },
-            {
-                path: "/sell-history",
-                element: <SellHistory />,
-            },
-            {
-                path: "/bulk-delete",
-                element: <BulkDelete />,
-            },
-            {
-                path: "*",
-                element: <div>Not found!</div>,
-            },
-        ],
+        children: [],
+    },
+    {
+        path: "/manager",
+        element: (
+            <ProtectedRoute role="manager">
+                <App />
+            </ProtectedRoute>
+        ),
+        children: routeGenerator(managerPaths),
+    },
+    {
+        path: "/seller",
+        element: (
+            <ProtectedRoute role="seller">
+                <App />
+            </ProtectedRoute>
+        ),
+        children: routeGenerator(sellerPaths),
     },
     {
         path: "/login",

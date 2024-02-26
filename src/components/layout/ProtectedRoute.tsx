@@ -1,11 +1,30 @@
 import { ReactNode } from "react";
-import { useAppSelector } from "../../redux/hooks";
-import { useCurrentToken } from "../../redux/feature/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { logout, useCurrentToken } from "../../redux/feature/auth/authSlice";
 import { Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { verifyToken } from "../../utils/verifyToken";
+import { TUser } from "../../types";
 
-const ProtectedRoute = ({ children }: { children: ReactNode }) => {
+type TProtectedRoute = {
+    children: ReactNode;
+    role: string | undefined;
+};
+
+const ProtectedRoute = ({ children, role }: TProtectedRoute) => {
+    const dispatch = useAppDispatch();
     const token = useAppSelector(useCurrentToken);
+
+    let user;
+
+    if (token) {
+        user = verifyToken(token);
+    }
+
+    if (role !== undefined && (user as TUser)?.role !== role) {
+        dispatch(logout());
+        return <Navigate to="/" replace={true} />;
+    }
 
     if (token) {
         const isValid = jwtDecode(token);
@@ -15,6 +34,7 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
             const isExpired = isValid.exp < Date.now() / 1000;
 
             if (isExpired) {
+                dispatch(logout());
                 return <Navigate to="/login" replace={true} />;
             }
         }

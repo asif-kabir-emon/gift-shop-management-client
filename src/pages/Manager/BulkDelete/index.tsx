@@ -1,83 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
-import {
-    useDeleteProductsMutation,
-    useGetProductsMutation,
-} from "../../redux/feature/product/productApi";
+import { useState } from "react";
 import { Spin } from "antd";
 import { toast } from "sonner";
-
-type TProductProps = {
-    _id: string;
-    name: string;
-    price: string;
-    quantity: string;
-    description: string;
-    imageURL: string;
-    category: {
-        _id: string;
-        name: string;
-    };
-    brand: {
-        _id: string;
-        name: string;
-    };
-    occasion: {
-        _id: string;
-        name: string;
-    };
-    theme: {
-        _id: string;
-        name: string;
-    };
-    createdAt: string;
-    updatedAt: string;
-};
+import {
+    useDeleteMultipleProductsMutation,
+    useGetAllProductsQuery,
+} from "../../../redux/feature/product/productManagement.api";
+import { TProduct } from "../../../types";
 
 const BulkDelete = () => {
-    const [loading, setLoading] = useState(true);
-    const [products] = useGetProductsMutation();
-    const [productData, setProductData] = useState<[TProductProps]>([
-        {
-            _id: "",
-            name: "",
-            price: "",
-            quantity: "",
-            description: "",
-            imageURL: "",
-            category: {
-                _id: "",
-                name: "",
-            },
-            brand: {
-                _id: "",
-                name: "",
-            },
-            occasion: {
-                _id: "",
-                name: "",
-            },
-            theme: {
-                _id: "",
-                name: "",
-            },
-            createdAt: "",
-            updatedAt: "",
-        },
-    ]);
-
-    useEffect(() => {
-        const fetchProducts = async () => {
-            const res = await products(undefined).unwrap();
-            if (res.success === true) {
-                setProductData(res.data);
-            }
-            setLoading(false);
-        };
-
-        fetchProducts();
-    }, [loading]);
+    const { data: productData, isLoading: isProductDataLoading } =
+        useGetAllProductsQuery(undefined);
 
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
@@ -92,9 +26,9 @@ const BulkDelete = () => {
         }
     };
 
-    const [deleteProduct] = useDeleteProductsMutation();
+    const [deleteProduct] = useDeleteMultipleProductsMutation();
 
-    const deleteProducts = async (items: string[]) => {
+    const removeProducts = async (items: string[]) => {
         const toastId = toast.loading("Deleting ...");
         try {
             const res = await deleteProduct({
@@ -102,7 +36,6 @@ const BulkDelete = () => {
             }).unwrap();
             if (res.success === true) {
                 toast.success(res.message, { id: toastId, duration: 2000 });
-                setLoading(true);
             } else {
                 toast.error(res.message, { id: toastId, duration: 2000 });
             }
@@ -136,7 +69,7 @@ const BulkDelete = () => {
                             type="button"
                             className="bg-red-500 text-white px-3 py-1 rounded-md disabled:opacity-50"
                             disabled={selectedItems.length === 0}
-                            onClick={() => deleteProducts(selectedItems)}
+                            onClick={() => removeProducts(selectedItems)}
                         >
                             Delete
                         </button>
@@ -153,9 +86,9 @@ const BulkDelete = () => {
                                 <th className="px-4 py-2">Category</th>
                             </tr>
                         </thead>
-                        {loading === false ? (
+                        {isProductDataLoading === false ? (
                             <tbody>
-                                {productData.map((product) => (
+                                {productData?.data?.map((product: TProduct) => (
                                     <tr
                                         key={product._id}
                                         className="bg-gray-200"
@@ -198,7 +131,9 @@ const BulkDelete = () => {
                                             {product.quantity}
                                         </td>
                                         <td className="px-4 py-2">
-                                            {product.category.name}
+                                            {product?.category
+                                                ?.map((c) => c.name)
+                                                .join(", ") || ""}
                                         </td>
                                     </tr>
                                 ))}

@@ -23,7 +23,7 @@ const Login = () => {
                 email: data.email,
                 password: data.password,
             };
-            console.log(userInfo);
+            // console.log(userInfo);
 
             if (userInfo.email === "" || userInfo.password === "") {
                 toast.error("Please fill all required Fields", {
@@ -33,7 +33,7 @@ const Login = () => {
                 return;
             } else {
                 const res = await login(userInfo).unwrap();
-                console.log(res.data);
+                // console.log(res.data);
 
                 if (res.data.success === false) {
                     toast.error(res.message, {
