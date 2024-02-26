@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
-import ProductGridView from "./ProductGridView";
-import FilterView from "./FilterView";
+import FilterView from "../../../components/ui/Product/FilterView";
+import ProductListView from "../../../components/ui/Product/ProductListView";
+import ProductGridView from "../../../components/ui/Product/ProductGridView";
 import { Spin } from "antd";
-import ProductListView from "./ProductListView";
 import { useGetAllProductsQuery } from "../../../redux/feature/product/productManagement.api";
 import { useAppSelector } from "../../../redux/hooks";
 import { useSearchParameter } from "../../../redux/feature/product/productSlice";

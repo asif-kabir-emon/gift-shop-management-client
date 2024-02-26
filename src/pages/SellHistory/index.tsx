@@ -158,7 +158,10 @@ const SellHistory = () => {
                         {loading === false ? (
                             sellInfo.length > 0 ? (
                                 sellInfo.map((item: any) => (
-                                    <tr className="text-start border-[1px] border-l-0 border-r-0 border-gray-200 hover:bg-gray-100">
+                                    <tr
+                                        className="text-start border-[1px] border-l-0 border-r-0 border-gray-200 hover:bg-gray-100"
+                                        key={item._id}
+                                    >
                                         <td className="px-3 py-1">
                                             {item.productId.name}
                                         </td>

@@ -5,10 +5,10 @@ import { useSellProductMutation } from "../../../redux/feature/SaleInfo/sellMana
 import { useState } from "react";
 import { TProduct } from "../../../types";
 import { Button, Modal } from "antd";
-import GForm from "../../../components/form/GForm";
+import GForm from "../../form/GForm";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { sellProductSchema } from "../../../Schemas/sell.schema";
-import GInput from "../../../components/form/GInput";
+import GInput from "../../form/GInput";
 
 const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
     const [sellProduct] = useSellProductMutation();

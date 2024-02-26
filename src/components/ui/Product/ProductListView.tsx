@@ -1,20 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { useAppDispatch } from "../../../redux/hooks";
-import { setProduct } from "../../../redux/feature/product/productSlice";
+import { useAppSelector } from "../../../redux/hooks";
 import { useDeleteMultipleProductsMutation } from "../../../redux/feature/product/productManagement.api";
-import { TProduct } from "../../../types";
+import { TProduct, TUser } from "../../../types";
 import ProductSellModal from "./ProductSellModal";
+import { useCurrentToken } from "../../../redux/feature/auth/authSlice";
+import { verifyToken } from "../../../utils/verifyToken";
 
 type TProductDataProps = {
     productData: [TProduct];
 };
 
 const ProductListView = ({ productData }: TProductDataProps) => {
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
+    const token = useAppSelector(useCurrentToken);
+    const user = token ? verifyToken(token) : null;
 
     const [deleteProducts] = useDeleteMultipleProductsMutation();
 
@@ -50,20 +51,6 @@ const ProductListView = ({ productData }: TProductDataProps) => {
         }
     };
 
-    const onClickCopyProduct = (id: string) => {
-        console.log("Copy Product", id);
-        const product = productData.find((p) => p._id === id);
-        dispatch(
-            setProduct({
-                name: product?.name || "",
-                price: Number(product?.price) || 0,
-                description: product?.description || "",
-                quantity: Number(product?.quantity) || 0,
-            }),
-        );
-        navigate(`/gift-products/add`);
-    };
-
     return (
         <div className="flex justify-center w-full">
             <div className="flex flex-col justify-start flex-wrap gap-2 w-full">
@@ -93,7 +80,9 @@ const ProductListView = ({ productData }: TProductDataProps) => {
                     <table className="w-full">
                         <thead>
                             <tr className="bg-gray-300">
-                                <th className="px-4 py-2 w-2"></th>
+                                <th
+                                    className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"} px-[2px] py-2 w-2`}
+                                ></th>
                                 <th className="px-4 py-2 text-left w-[40px]">
                                     Product
                                 </th>
@@ -102,12 +91,20 @@ const ProductListView = ({ productData }: TProductDataProps) => {
                                 <th className="px-4 py-2 text-left">
                                     Quantity
                                 </th>
-                                <th className="px-[2px] py-2 text-left w-[40px]">
+                                <th
+                                    className={`${!user !== null && (user as TUser)?.role === "seller" ? "w-[60px]" : "w-[40px]"} py-2 text-left`}
+                                >
                                     Action
                                 </th>
-                                <th className="px-[2px] py-2 text-left  w-[40px]"></th>
-                                <th className="px-[2px] py-2 text-left  w-[60px]"></th>
-                                <th className="px-[2px] py-2 text-left  w-[40px]"></th>
+                                <th
+                                    className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"} py-2 text-left w-[40px]`}
+                                ></th>
+                                <th
+                                    className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"} py-2 text-left w-[60px]`}
+                                ></th>
+                                <th
+                                    className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"} py-2 text-left w-[40px]`}
+                                ></th>
                             </tr>
                         </thead>
                         {productData.length > 0 ? (
@@ -117,7 +114,9 @@ const ProductListView = ({ productData }: TProductDataProps) => {
                                         key={product._id}
                                         className="border-[1px] border-l-0 border-r-0 border-gray-200 hover:bg-gray-100"
                                     >
-                                        <td className="px-4 py-2">
+                                        <td
+                                            className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"} px-[10px] py-2`}
+                                        >
                                             <input
                                                 type="checkbox"
                                                 name="product"
@@ -182,9 +181,11 @@ const ProductListView = ({ productData }: TProductDataProps) => {
                                         <td className="px-4 py-2">
                                             {product.quantity}
                                         </td>
-                                        <td className="px-[2px] py-2">
+                                        <td
+                                            className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"} px-[2px] py-2`}
+                                        >
                                             <Link
-                                                to={`/gift-products/edit/${product._id}`}
+                                                to={`/${(user as TUser)?.role}/update-gift/${product._id}`}
                                             >
                                                 <button className="bg-[var(--secondary-color)] text-[var(--primary-color)] text-center rounded-md p-2 w-[40px]">
                                                     <svg
@@ -204,14 +205,16 @@ const ProductListView = ({ productData }: TProductDataProps) => {
                                                 </button>
                                             </Link>
                                         </td>
-                                        <td className="px-[2px] py-2">
+                                        <td
+                                            className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"} px-[2px] py-2`}
+                                        >
                                             <button
+                                                className="bg-red-600 hover:bg-red-400 text-[var(--primary-color)] text-center rounded-md p-2 w-[40px]"
                                                 onClick={() => {
                                                     handleRemoveProduct([
                                                         product._id,
                                                     ]);
                                                 }}
-                                                className="bg-red-600 hover:bg-red-400 text-[var(--primary-color)] text-center rounded-md p-2 w-[40px]"
                                             >
                                                 <svg
                                                     className="size-5"
@@ -229,37 +232,38 @@ const ProductListView = ({ productData }: TProductDataProps) => {
                                                 </svg>
                                             </button>
                                         </td>
-                                        <td className="px-[2px] py-2">
+                                        <td
+                                            className={`${!user !== null && (user as TUser)?.role === "seller" ? "pl-[10px]" : ""}  px-[2px] py-2`}
+                                        >
                                             <div>
                                                 <ProductSellModal
                                                     productInfo={product}
                                                 />
                                             </div>
                                         </td>
-                                        <td className="px-[2px] py-2">
-                                            <button
-                                                onClick={() => {
-                                                    onClickCopyProduct(
-                                                        product._id,
-                                                    );
-                                                }}
-                                                className="bg-[var(--secondary-color)] text-[var(--primary-color)] text-center rounded-md p-2 w-[40px] font-bold"
+                                        <td
+                                            className={`${!user !== null && (user as TUser)?.role === "seller" ? "hidden" : "pr-[10px]"} px-[2px] py-2`}
+                                        >
+                                            <Link
+                                                to={`/${(user as TUser)?.role}/add-gift/copied/${product._id}`}
                                             >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth={1.5}
-                                                    stroke="currentColor"
-                                                    className="w-6 h-6"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"
-                                                    />
-                                                </svg>
-                                            </button>
+                                                <button className="bg-[var(--secondary-color)] text-[var(--primary-color)] text-center rounded-md p-2 w-[40px] font-bold">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        strokeWidth={1.5}
+                                                        stroke="currentColor"
+                                                        className="w-6 h-6"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"
+                                                        />
+                                                    </svg>
+                                                </button>
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))}

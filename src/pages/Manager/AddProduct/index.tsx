@@ -3,7 +3,7 @@
 import GForm from "../../../components/form/GForm";
 import GInput from "../../../components/form/GInput";
 import GTextBox from "../../../components/form/GTextBox";
-import { FieldValues } from "react-hook-form";
+import { FieldValues, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
 import { productSchema } from "../../../Schemas/product.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -67,7 +67,7 @@ const AddProduct = () => {
         },
     );
 
-    const onSubmit = async (data: FieldValues) => {
+    const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         const toastId = toast.loading("Creating Product...");
         const productInfo = {
             name: data.name,
@@ -118,6 +118,7 @@ const AddProduct = () => {
             <div className="bg-white px-5 py-3 rounded text-[16px]">
                 <GForm
                     onSubmit={onSubmit}
+                    disableReset={true}
                     resolver={zodResolver(productSchema)}
                 >
                     <GInput

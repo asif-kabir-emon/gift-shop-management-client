@@ -13,10 +13,10 @@ import {
     useSearchParameter,
 } from "../../../redux/feature/product/productSlice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import GForm from "../../../components/form/GForm";
+import GForm from "../../form/GForm";
 import { FieldValues, SubmitHandler } from "react-hook-form";
-import GInput from "../../../components/form/GInput";
-import GRadioInput from "../../../components/form/GRadioInput";
+import GInput from "../../form/GInput";
+import GRadioInput from "../../form/GRadioInput";
 
 const filterObject = (obj: { [s: string]: unknown } | ArrayLike<unknown>) => {
     return Object.fromEntries(
@@ -93,6 +93,7 @@ const FilterView = () => {
                 theme: "",
             }),
         );
+        setShowFilter(false);
         setResetKey((prevKey) => prevKey + 1);
     };
 
