@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-import GForm from "../../../components/form/GForm";
-import GInput from "../../../components/form/GInput";
-import GTextBox from "../../../components/form/GTextBox";
+import GForm from "../../../../components/form/GForm";
+import GInput from "../../../../components/form/GInput";
+import GTextBox from "../../../../components/form/GTextBox";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
-import { productSchema } from "../../../Schemas/product.schema";
+import { productSchema } from "../../../../Schemas/product.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import GSelect from "../../../components/form/GSelect";
+import GSelect from "../../../../components/form/GSelect";
 import {
     useAddNewProductMutation,
     useGetAllBrandQuery,
     useGetAllCategoryQuery,
     useGetAllOccasionQuery,
     useGetAllThemeQuery,
-} from "../../../redux/feature/product/productManagement.api";
+} from "../../../../redux/feature/product/productManagement.api";
 import { useNavigate } from "react-router";
 // import GImageInput from "../../../components/form/GImageInput";
 

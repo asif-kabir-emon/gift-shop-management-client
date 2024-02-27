@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router";
-import GForm from "../../../components/form/GForm";
-import GInput from "../../../components/form/GInput";
-import GTextBox from "../../../components/form/GTextBox";
-import GSelect from "../../../components/form/GSelect";
+import GForm from "../../../../components/form/GForm";
+import GInput from "../../../../components/form/GInput";
+import GTextBox from "../../../../components/form/GTextBox";
+import GSelect from "../../../../components/form/GSelect";
 import {
     useAddNewProductMutation,
     useGetAllBrandQuery,
@@ -12,9 +12,9 @@ import {
     useGetAllOccasionQuery,
     useGetAllThemeQuery,
     useGetProductByIdQuery,
-} from "../../../redux/feature/product/productManagement.api";
+} from "../../../../redux/feature/product/productManagement.api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { productSchema } from "../../../Schemas/product.schema";
+import { productSchema } from "../../../../Schemas/product.schema";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import { Spin } from "antd";
 

@@ -39,7 +39,7 @@ const Login = () => {
                         token: res.data.accessToken,
                     }),
                 );
-                navigate(`/${(user as TUser)?.role}/dashboard`);
+                navigate(`/${(user as TUser)?.role}/gift-list`);
                 toast.success(res.message, { id: toastId, duration: 2000 });
             } else {
                 toast.error(res.message, {

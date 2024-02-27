@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
-import FilterView from "../../../components/ui/Product/FilterView";
-import ProductListView from "../../../components/ui/Product/ProductListView";
-import ProductGridView from "../../../components/ui/Product/ProductGridView";
+import FilterView from "../../../../components/ui/Product/FilterView";
+import ProductListView from "../../../../components/ui/Product/ProductListView";
+import ProductGridView from "../../../../components/ui/Product/ProductGridView";
 import { Spin } from "antd";
-import { useGetAllProductsQuery } from "../../../redux/feature/product/productManagement.api";
-import { useAppSelector } from "../../../redux/hooks";
-import { useSearchParameter } from "../../../redux/feature/product/productSlice";
+import { useGetAllProductsQuery } from "../../../../redux/feature/product/productManagement.api";
+import { useAppSelector } from "../../../../redux/hooks";
+import { useSearchParameter } from "../../../../redux/feature/product/productSlice";
 
 const filterObject = (obj: { [s: string]: unknown } | ArrayLike<unknown>) => {
     return Object.fromEntries(

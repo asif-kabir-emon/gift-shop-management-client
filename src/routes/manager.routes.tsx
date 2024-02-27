@@ -1,11 +1,11 @@
 import Dashboard from "../pages/Dashboard";
 import AddCoupon from "../pages/Manager/CouponManagement/AddCoupon";
-import AddProduct from "../pages/Manager/AddProduct";
+import AddProduct from "../pages/Manager/ProductManagement/AddProduct";
 import BulkDelete from "../pages/Manager/BulkDelete";
-import CopyProduct from "../pages/Manager/CopyProduct";
+import CopyProduct from "../pages/Manager/ProductManagement/CopyProduct";
 import Coupons from "../pages/Manager/CouponManagement/Coupons";
-import ManagerProducts from "../pages/Manager/ManagerProducts";
-import UpdateProduct from "../pages/Manager/UpdateProduct";
+import ManagerProducts from "../pages/Manager/ProductManagement/ManagerProducts";
+import UpdateProduct from "../pages/Manager/ProductManagement/UpdateProduct";
 import SellHistory from "../pages/SellHistory";
 import UpdateCoupon from "../pages/Manager/CouponManagement/UpdateCoupon";
 
