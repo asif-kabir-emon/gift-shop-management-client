@@ -7,7 +7,7 @@
 1. **Clone the GitHub Repository on local machine:**
     
     ```sh
-    git clone https://github.com/Porgramming-Hero-web-course/l2b2-full-stack-a5-client-side-asif-kabir-emon.git
+    git clone https://github.com/Porgramming-Hero-web-course/l2-b2-assignment-6-fronten-asif-kabir-emon.git
     ```
 
 2. **Install dependencies:**
