@@ -28,11 +28,7 @@ export const couponSchema = z.object({
     startDate: z.any({
         required_error: "Start Date is required",
     }),
-    expiryDate: z
-        .any({
-            required_error: "Expiry Date is required",
-        })
-        .refine((val) => val > new Date(), {
-            message: "Expiry Date must be greater than today",
-        }),
+    expiryDate: z.any({
+        required_error: "Expiry Date is required",
+    }),
 });

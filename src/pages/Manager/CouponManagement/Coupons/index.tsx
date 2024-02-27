@@ -3,17 +3,19 @@ import { Modal, Spin } from "antd";
 import {
     useDeleteCouponMutation,
     useGetAllCouponsQuery,
-} from "../../../redux/feature/coupon/couponManagement.api";
+} from "../../../../redux/feature/coupon/couponManagement.api";
 import moment from "moment";
 import { toast } from "sonner";
-import { useAppSelector } from "../../../redux/hooks";
-import { useCurrentToken } from "../../../redux/feature/auth/authSlice";
-import { verifyToken } from "../../../utils/verifyToken";
-import { TUser } from "../../../types";
-import { TCoupon } from "../../../types/couponManagement.type";
+import { useAppSelector } from "../../../../redux/hooks";
+import { useCurrentToken } from "../../../../redux/feature/auth/authSlice";
+import { verifyToken } from "../../../../utils/verifyToken";
+import { TUser } from "../../../../types";
+import { TCoupon } from "../../../../types/couponManagement.type";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 const Coupons = () => {
+    const navigate = useNavigate();
     const token = useAppSelector(useCurrentToken);
     const user = verifyToken(token as string);
     const currentDate = moment().format("YYYY-MM-DD");
@@ -116,6 +118,11 @@ const Coupons = () => {
                                                 </svg>
                                             </button>
                                             <button
+                                                onClick={() => {
+                                                    navigate(
+                                                        `/manager/update-coupon/${coupon._id}`,
+                                                    );
+                                                }}
                                                 className={`${user && (user as TUser).role === "seller" && "hidden"} bg-[#f0f0f0] hover:bg-gray-200 p-2 rounded-md border-[1px] border-slate-300`}
                                             >
                                                 <svg

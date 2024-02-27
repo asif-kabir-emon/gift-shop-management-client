@@ -1,6 +1,5 @@
 import { DatePicker, Form } from "antd";
 import dayjs from "dayjs";
-import moment from "moment";
 import { Controller } from "react-hook-form";
 
 type GHInputDatePickerProps = {
@@ -8,15 +7,16 @@ type GHInputDatePickerProps = {
     label: string;
     placeholder?: string;
     disabled?: boolean;
+    defaultValue?: string;
 };
 
-const GDatePickerWithCurrentDate = ({
+const GDatePickerWithDefaultValue = ({
     name,
     label,
     placeholder,
     disabled,
+    defaultValue,
 }: GHInputDatePickerProps) => {
-    const currentDate = moment().format("YYYY-MM-DD");
     const dateFormat = "YYYY-MM-DD";
 
     return (
@@ -31,7 +31,7 @@ const GDatePickerWithCurrentDate = ({
                             placeholder={placeholder}
                             style={{ width: "100%" }}
                             disabled={disabled}
-                            defaultValue={dayjs(currentDate, dateFormat)}
+                            defaultValue={dayjs(defaultValue, dateFormat)}
                         />
                         {error && (
                             <small style={{ color: "red" }}>
@@ -45,4 +45,4 @@ const GDatePickerWithCurrentDate = ({
     );
 };
 
-export default GDatePickerWithCurrentDate;
+export default GDatePickerWithDefaultValue;

@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FieldValues, SubmitHandler } from "react-hook-form";
-import GForm from "../../../components/form/GForm";
-import GInput from "../../../components/form/GInput";
-import GDatePicker from "../../../components/form/GDatePicker";
-import GSelect from "../../../components/form/GSelect";
+import GForm from "../../../../components/form/GForm";
+import GInput from "../../../../components/form/GInput";
+import GDatePicker from "../../../../components/form/GDatePicker";
+import GSelect from "../../../../components/form/GSelect";
 import {
     discountTypeOptions,
     haveMaxDiscountOptions,
-} from "../../../constants/coupon";
+} from "../../../../constants/coupon";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { couponSchema } from "../../../Schemas/coupon.schema";
-import { useCreateCouponMutation } from "../../../redux/feature/coupon/couponManagement.api";
+import { couponSchema } from "../../../../Schemas/coupon.schema";
+import { useCreateCouponMutation } from "../../../../redux/feature/coupon/couponManagement.api";
 import { toast } from "sonner";
-import { TCoupon } from "../../../types/couponManagement.type";
+import { TCreateCoupon } from "../../../../types/couponManagement.type";
 import { useNavigate } from "react-router";
 
 const AddCoupon = () => {
@@ -20,6 +20,15 @@ const AddCoupon = () => {
     const [createCoupon] = useCreateCouponMutation();
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+        if (
+            data.expiryDate.toISOString().split("T")[0] <
+            data.startDate.toISOString().split("T")[0]
+        ) {
+            toast.error("Expiry Date must be greater than Start Date", {
+                position: "top-right",
+            });
+            return;
+        }
         if (data.startDate > data.expiryDate) {
             toast.error("Start Date must be less than Expiry Date", {
                 position: "top-right",
@@ -49,7 +58,7 @@ const AddCoupon = () => {
             position: "top-right",
         });
 
-        const couponData: Partial<TCoupon> = {
+        const couponData: Partial<TCreateCoupon> = {
             code: data.code.toUpperCase(),
             discountType: data.discountType,
             discountAmount: Number(data.discountAmount),

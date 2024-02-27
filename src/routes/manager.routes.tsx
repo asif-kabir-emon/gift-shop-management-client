@@ -1,12 +1,13 @@
 import Dashboard from "../pages/Dashboard";
-import AddCoupon from "../pages/Manager/AddCoupon";
+import AddCoupon from "../pages/Manager/CouponManagement/AddCoupon";
 import AddProduct from "../pages/Manager/AddProduct";
 import BulkDelete from "../pages/Manager/BulkDelete";
 import CopyProduct from "../pages/Manager/CopyProduct";
-import Coupons from "../pages/Manager/Coupons";
+import Coupons from "../pages/Manager/CouponManagement/Coupons";
 import ManagerProducts from "../pages/Manager/ManagerProducts";
 import UpdateProduct from "../pages/Manager/UpdateProduct";
 import SellHistory from "../pages/SellHistory";
+import UpdateCoupon from "../pages/Manager/CouponManagement/UpdateCoupon";
 
 export const managerPaths = [
     {
@@ -54,6 +55,10 @@ export const managerPaths = [
                 name: "Add Coupon",
                 path: "add-coupon",
                 element: <AddCoupon />,
+            },
+            {
+                path: "update-coupon/:couponId",
+                element: <UpdateCoupon />,
             },
         ],
     },

@@ -8,12 +8,14 @@ const CouponManagement = baseApi.injectEndpoints({
                 method: "POST",
                 body,
             }),
+            invalidatesTags: ["coupons"],
         }),
         getAllCoupons: builder.query({
             query: () => ({
                 url: "/coupon",
                 method: "GET",
             }),
+            providesTags: ["coupons"],
         }),
         getCouponById: builder.query({
             query: (id) => ({
@@ -23,9 +25,18 @@ const CouponManagement = baseApi.injectEndpoints({
         }),
         deleteCoupon: builder.mutation({
             query: (id) => ({
-                url: `/coupon/${id}`,
+                url: `/coupon/delete-coupon/${id}`,
                 method: "DELETE",
             }),
+            invalidatesTags: ["coupons"],
+        }),
+        updateCoupon: builder.mutation({
+            query: (payload) => ({
+                url: `/coupon/update-coupon/${payload.id}`,
+                method: "PUT",
+                body: payload.data,
+            }),
+            invalidatesTags: ["coupons"],
         }),
     }),
 });
@@ -35,4 +46,5 @@ export const {
     useGetAllCouponsQuery,
     useGetCouponByIdQuery,
     useDeleteCouponMutation,
+    useUpdateCouponMutation,
 } = CouponManagement;

@@ -10,3 +10,16 @@ export type TCoupon = {
     expiryDate: string;
     isDeleted?: boolean;
 };
+
+export type TCreateCoupon = {
+    _id: string;
+    code: string;
+    discountType: "percentage" | "fixed";
+    discountAmount: number;
+    minOrder: number;
+    haveMaxDiscount: boolean;
+    maxDiscount?: number;
+    startDate: Date;
+    expiryDate: Date;
+    isDeleted?: boolean;
+};
