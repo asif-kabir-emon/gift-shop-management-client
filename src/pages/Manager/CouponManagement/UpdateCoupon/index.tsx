@@ -52,15 +52,6 @@ const UpdateCoupon = () => {
     console.log(couponData);
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-        // if (
-        //     data.expiryDate.toISOString().split("T")[0] <
-        //     data.startDate.toISOString().split("T")[0]
-        // ) {
-        //     toast.error("Expiry Date must be greater than Start Date", {
-        //         position: "top-right",
-        //     });
-        //     return;
-        // }
         if (data.startDate > data.expiryDate) {
             toast.error("Start Date must be less than Expiry Date", {
                 position: "top-right",
