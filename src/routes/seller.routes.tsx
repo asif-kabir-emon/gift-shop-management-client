@@ -1,7 +1,7 @@
+import Coupons from "../pages/Coupons";
 import Dashboard from "../pages/Dashboard";
-import Coupons from "../pages/Manager/CouponManagement/Coupons";
+import GiftProducts from "../pages/GiftProducts";
 import SellHistory from "../pages/SellHistory";
-import SellerProductList from "../pages/Seller/SellerProductList";
 
 export const sellerPaths = [
     {
@@ -12,7 +12,7 @@ export const sellerPaths = [
     {
         name: "Gift List",
         path: "gift-list",
-        element: <SellerProductList />,
+        element: <GiftProducts />,
     },
     {
         name: "Coupon List",

@@ -87,7 +87,7 @@ const CopyProduct = () => {
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         const toastId = toast.loading("Creating Product...", {
-            position: "top-center",
+            position: "top-right",
         });
         const productInfo = {
             name: data.name,
@@ -109,7 +109,7 @@ const CopyProduct = () => {
             const res = await addNewProduct(formData).unwrap();
             console.log(res);
             if (res.success) {
-                navigate("/gift-products/gift-list");
+                navigate("/manager/gift-list");
                 toast.success("Product Created Successfully", {
                     id: toastId,
                     duration: 2000,

@@ -86,7 +86,9 @@ const UpdateProduct = () => {
     );
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-        const toastId = toast.loading("Updating Product...");
+        const toastId = toast.loading("Updating Product...", {
+            position: "top-right",
+        });
         const updatedProductInfo = {
             name: data.name,
             price: Number(data.price),
@@ -100,7 +102,7 @@ const UpdateProduct = () => {
 
         try {
             const res = await updateProduct({
-                id: param?.id,
+                id: param.productId,
                 productInfo: updatedProductInfo,
             }).unwrap();
             if (res.success === true) {
@@ -108,7 +110,7 @@ const UpdateProduct = () => {
                     id: toastId,
                     duration: 2000,
                 });
-                navigate("/gift-products/gift-list");
+                navigate("/manager/gift-list");
             } else {
                 toast.error(res.message || "Failed to update product", {
                     id: toastId,

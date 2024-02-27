@@ -89,7 +89,7 @@ const AddProduct = () => {
             const res = await addNewProduct(formData).unwrap();
             console.log(res);
             if (res.success) {
-                navigate("/gift-products/gift-list");
+                navigate("/manager/gift-list");
                 toast.success("Product Created Successfully", {
                     id: toastId,
                     duration: 2000,

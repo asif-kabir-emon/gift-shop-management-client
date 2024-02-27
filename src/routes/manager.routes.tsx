@@ -3,11 +3,11 @@ import AddCoupon from "../pages/Manager/CouponManagement/AddCoupon";
 import AddProduct from "../pages/Manager/ProductManagement/AddProduct";
 import BulkDelete from "../pages/Manager/BulkDelete";
 import CopyProduct from "../pages/Manager/ProductManagement/CopyProduct";
-import Coupons from "../pages/Manager/CouponManagement/Coupons";
-import ManagerProducts from "../pages/Manager/ProductManagement/ManagerProducts";
 import UpdateProduct from "../pages/Manager/ProductManagement/UpdateProduct";
 import SellHistory from "../pages/SellHistory";
 import UpdateCoupon from "../pages/Manager/CouponManagement/UpdateCoupon";
+import GiftProducts from "../pages/GiftProducts";
+import Coupons from "../pages/Coupons";
 
 export const managerPaths = [
     {
@@ -21,7 +21,7 @@ export const managerPaths = [
             {
                 name: "Gift List",
                 path: "gift-list",
-                element: <ManagerProducts />,
+                element: <GiftProducts />,
             },
             {
                 name: "Add Gift",

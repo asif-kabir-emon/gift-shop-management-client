@@ -61,13 +61,13 @@ const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
                 orderAmount: orderAmount,
             }).unwrap();
             if (res.success === true) {
-                toast.success(res.message || "Coupon verified successfully", {
+                toast.success("Valid Coupon", {
                     id: toastId,
                     duration: 2000,
                 });
                 return res;
             } else {
-                toast.error(res.message || "Failed to verify coupon", {
+                toast.error("Invalid Coupon", {
                     id: toastId,
                     duration: 2000,
                 });
@@ -134,7 +134,7 @@ const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
         try {
             const res = await sellProduct(sellInfo as TSellInfo).unwrap();
             if (res.success === true) {
-                toast.success(res.message || "Product selling successfully", {
+                toast.success("Product sold successfully", {
                     id: toastId,
                     duration: 2000,
                 });
@@ -246,7 +246,15 @@ const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
                                     </Col>
                                 </Row>
                             </div>
-                            <div className="flex justify-end my-5">
+                            <div className="flex justify-center gap-3 mt-10 mb-5">
+                                <Button
+                                    onClick={() => {
+                                        handleCancel();
+                                    }}
+                                    className="bg-[var(--secondary-color)] min-w-[100px] text-[var(--primary-color)] m-0 rounded-md"
+                                >
+                                    Cancel
+                                </Button>
                                 <Button
                                     htmlType="submit"
                                     className="bg-[var(--secondary-color)] min-w-[100px] text-[var(--primary-color)] m-0 rounded-md"
@@ -271,7 +279,9 @@ const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
                             <h4>
                                 Total Amount: &#2547; {sellInfo?.totalAmount}
                             </h4>
-                            <h4>Discount Amount: {sellInfo?.discount}</h4>
+                            <h4>
+                                Discount Amount: &#2547; {sellInfo?.discount}
+                            </h4>
                             <h4>
                                 Payable Amount: &#2547; {sellInfo?.paidAmount}
                             </h4>
@@ -409,7 +419,7 @@ const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
                                 htmlType="button"
                                 className="bg-[var(--secondary-color)] min-w-[100px] text-[var(--primary-color)] m-0 rounded-md"
                             >
-                                Print Invoice
+                                Download Invoice
                             </Button>
                         </div>
                     </div>

@@ -3,14 +3,14 @@ import { Modal, Spin } from "antd";
 import {
     useDeleteCouponMutation,
     useGetAllCouponsQuery,
-} from "../../../../redux/feature/coupon/couponManagement.api";
+} from "../../redux/feature/coupon/couponManagement.api";
 import moment from "moment";
 import { toast } from "sonner";
-import { useAppSelector } from "../../../../redux/hooks";
-import { useCurrentToken } from "../../../../redux/feature/auth/authSlice";
-import { verifyToken } from "../../../../utils/verifyToken";
-import { TUser } from "../../../../types";
-import { TCoupon } from "../../../../types/couponManagement.type";
+import { useAppSelector } from "../../redux/hooks";
+import { useCurrentToken } from "../../redux/feature/auth/authSlice";
+import { verifyToken } from "../../utils/verifyToken";
+import { TUser } from "../../types";
+import { TCoupon } from "../../types/couponManagement.type";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
