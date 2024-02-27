@@ -7,7 +7,7 @@ import GInput from "../../components/form/GInput";
 import GPassword from "../../components/form/GPassword";
 import { FieldValues } from "react-hook-form";
 import { useAppDispatch } from "../../redux/hooks";
-import { useLoginMutation } from "../../redux/feature/auth/authApi";
+import { useLoginMutation } from "../../redux/feature/auth/auth.api";
 import { setUser } from "../../redux/feature/auth/authSlice";
 import { toast } from "sonner";
 import { verifyToken } from "../../utils/verifyToken";

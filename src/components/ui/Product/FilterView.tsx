@@ -20,7 +20,7 @@ import GRadioInput from "../../form/GRadioInput";
 
 const filterObject = (obj: { [s: string]: unknown } | ArrayLike<unknown>) => {
     return Object.fromEntries(
-        Object.entries(obj).filter(([key, value]) => {
+        Object.entries(obj).filter(([, value]) => {
             if (Array.isArray(value)) {
                 return value.length !== 0;
             } else {

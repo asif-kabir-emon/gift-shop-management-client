@@ -25,7 +25,6 @@ const SideBar = () => {
         user = null;
         dispatch(logout());
     }
-    // console.log("user", user);
 
     let sideBarItems;
 

@@ -1,12 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice } from "@reduxjs/toolkit";
-import { RootState } from "@reduxjs/toolkit/query";
-
-type TProductState = {
-    name: string;
-    price: number;
-    quantity: number;
-    description: string;
-};
 
 type TSearchQueryState = {
     name: string;
@@ -19,17 +12,10 @@ type TSearchQueryState = {
 };
 
 type TProduct = {
-    products: TProductState;
     searchQuery: TSearchQueryState;
 };
 
 const initialState: TProduct = {
-    products: {
-        name: "",
-        price: 0,
-        description: "",
-        quantity: 0,
-    },
     searchQuery: {
         name: "",
         minPrice: 0,
@@ -45,13 +31,6 @@ const productSlice = createSlice({
     name: "product",
     initialState,
     reducers: {
-        setProduct: (state, action) => {
-            const { name, price, description, quantity } = action.payload;
-            state.products.name = name;
-            state.products.price = price;
-            state.products.description = description;
-            state.products.quantity = quantity;
-        },
         setSearchQuery: (state, action) => {
             const {
                 name,
@@ -73,8 +52,8 @@ const productSlice = createSlice({
     },
 });
 
-export const { setProduct, setSearchQuery } = productSlice.actions;
+export const { setSearchQuery } = productSlice.actions;
 export default productSlice.reducer;
 
-export const useSearchParameter = (state: RootState) =>
+export const useSearchParameter = (state: { product: { searchQuery: any } }) =>
     state.product.searchQuery;

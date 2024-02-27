@@ -6,7 +6,7 @@ import GForm from "../../components/form/GForm";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import GInput from "../../components/form/GInput";
 import GPassword from "../../components/form/GPassword";
-import { useRegisterMutation } from "../../redux/feature/auth/authApi";
+import { useRegisterMutation } from "../../redux/feature/auth/auth.api";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registrationSchema } from "../../Schemas/auth.schema";
@@ -22,10 +22,9 @@ const Registration = () => {
             email: data.email,
             password: data.password,
         };
-        console.log(userInfo);
         try {
             const res = await register(userInfo).unwrap();
-            console.log(res);
+            // console.log(res);
             if (res.success === false) {
                 toast.error(res.message, {
                     id: toastId,

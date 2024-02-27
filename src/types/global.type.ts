@@ -8,6 +8,11 @@ export type TUser = {
     exp: number;
 };
 
+export type TRoute = {
+    path: string;
+    element: ReactNode;
+};
+
 export type TUserPath = {
     name?: string;
     path?: string;
@@ -15,15 +20,15 @@ export type TUserPath = {
     children?: TUserPath[];
 };
 
-export type TRoute = {
-    path: string;
-    element: ReactNode;
-};
-
-export type TSideBarItem =
+export type TChildrenMenuItemType =
     | {
           key: string;
-          label: import("react").ReactNode;
-          children?: TSideBarItem[];
+          label: ReactNode;
       }
     | undefined;
+
+export type TSidebarItem = {
+    key: string;
+    label: ReactNode;
+    children?: TChildrenMenuItemType[];
+};
