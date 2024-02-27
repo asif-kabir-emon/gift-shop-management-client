@@ -1,4 +1,4 @@
-import Dashboard from "../pages/Dashboard";
+// import Dashboard from "../pages/Dashboard";
 import AddCoupon from "../pages/Manager/CouponManagement/AddCoupon";
 import AddProduct from "../pages/Manager/ProductManagement/AddProduct";
 import BulkDelete from "../pages/Manager/BulkDelete";
@@ -10,11 +10,11 @@ import GiftProducts from "../pages/GiftProducts";
 import Coupons from "../pages/Coupons";
 
 export const managerPaths = [
-    {
-        name: "Dashboard",
-        path: "dashboard",
-        element: <Dashboard />,
-    },
+    // {
+    //     name: "Dashboard",
+    //     path: "dashboard",
+    //     element: <Dashboard />,
+    // },
     {
         name: "Gift Management",
         children: [
