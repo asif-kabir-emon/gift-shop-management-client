@@ -37,7 +37,7 @@ export const managerPaths = [
                 element: <CopyProduct />,
             },
             {
-                name: "Bulk Product Delete",
+                name: "Bulk Gift Delete",
                 path: "bulk-product-delete",
                 element: <BulkDelete />,
             },
