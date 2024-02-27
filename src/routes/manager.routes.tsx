@@ -35,6 +35,11 @@ export const managerPaths = [
                 path: "add-gift/copied/:productId",
                 element: <CopyProduct />,
             },
+            {
+                name: "Bulk Product Delete",
+                path: "bulk-product-delete",
+                element: <BulkDelete />,
+            },
         ],
     },
     {
@@ -42,7 +47,7 @@ export const managerPaths = [
         children: [
             {
                 name: "Coupon List",
-                path: "coupons",
+                path: "coupon-list",
                 element: <Coupons />,
             },
             {
@@ -56,10 +61,5 @@ export const managerPaths = [
         name: "Sell History",
         path: "sell-history",
         element: <SellHistory />,
-    },
-    {
-        name: "Bulk Delete",
-        path: "bulk-delete",
-        element: <BulkDelete />,
     },
 ];

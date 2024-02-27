@@ -9,7 +9,30 @@ const CouponManagement = baseApi.injectEndpoints({
                 body,
             }),
         }),
+        getAllCoupons: builder.query({
+            query: () => ({
+                url: "/coupon",
+                method: "GET",
+            }),
+        }),
+        getCouponById: builder.query({
+            query: (id) => ({
+                url: `/coupon/${id}`,
+                method: "GET",
+            }),
+        }),
+        deleteCoupon: builder.mutation({
+            query: (id) => ({
+                url: `/coupon/${id}`,
+                method: "DELETE",
+            }),
+        }),
     }),
 });
 
-export const { useCreateCouponMutation } = CouponManagement;
+export const {
+    useCreateCouponMutation,
+    useGetAllCouponsQuery,
+    useGetCouponByIdQuery,
+    useDeleteCouponMutation,
+} = CouponManagement;

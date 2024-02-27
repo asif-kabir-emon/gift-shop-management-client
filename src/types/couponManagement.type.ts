@@ -1,11 +1,12 @@
 export type TCoupon = {
+    _id: string;
     code: string;
     discountType: "percentage" | "fixed";
     discountAmount: number;
     minOrder: number;
     haveMaxDiscount: boolean;
     maxDiscount?: number;
-    startDate: Date;
-    expiryDate: Date;
+    startDate: string;
+    expiryDate: string;
     isDeleted?: boolean;
 };

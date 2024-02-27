@@ -71,7 +71,7 @@ const AddCoupon = () => {
                 toast.success(response.message, {
                     id: toastId,
                 });
-                navigate("/manager/coupons");
+                navigate("/manager/coupon-list");
             } else {
                 toast.error(response.message, {
                     id: toastId,
