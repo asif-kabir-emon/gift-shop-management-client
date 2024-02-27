@@ -22,9 +22,7 @@ const SellHistory = () => {
         if (sellHistory && !isSellHistoryLoading) {
             let total = 0;
             sellHistory.data.forEach((item: any) => {
-                item.totalAmount
-                    ? (total += item.totalAmount)
-                    : (total += item.quantity * item.productId.price);
+                total += item.paidAmount;
             });
             setTotalSell(total);
         }
@@ -166,11 +164,7 @@ const SellHistory = () => {
                                             {item.quantity}
                                         </td>
                                         <td className="px-3 py-1">
-                                            TK.{" "}
-                                            {item.totalAmount
-                                                ? item.totalAmount
-                                                : item.quantity *
-                                                  item.productId.price}
+                                            TK. {item.paidAmount}
                                         </td>
                                     </tr>
                                 ))

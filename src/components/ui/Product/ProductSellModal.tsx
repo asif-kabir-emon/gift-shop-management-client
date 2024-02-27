@@ -387,7 +387,7 @@ const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
                                     <span className="font-semibold">
                                         Discount Amount:
                                     </span>
-                                    <span>{sellInfo?.discount}</span>
+                                    <span>&#2547;{sellInfo?.discount}</span>
                                 </div>
                             </div>
                             <div>
