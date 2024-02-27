@@ -49,8 +49,6 @@ const UpdateCoupon = () => {
         useGetCouponByIdQuery(param.couponId);
     const [updateCoupon] = useUpdateCouponMutation();
 
-    console.log(couponData);
-
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         if (data.startDate > data.expiryDate) {
             toast.error("Start Date must be less than Expiry Date", {

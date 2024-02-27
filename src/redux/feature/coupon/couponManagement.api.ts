@@ -38,6 +38,13 @@ const CouponManagement = baseApi.injectEndpoints({
             }),
             invalidatesTags: ["coupons"],
         }),
+        verifyCoupon: builder.mutation({
+            query: (payload) => ({
+                url: `/coupon/verify-coupon`,
+                method: "POST",
+                body: payload,
+            }),
+        }),
     }),
 });
 
@@ -47,4 +54,5 @@ export const {
     useGetCouponByIdQuery,
     useDeleteCouponMutation,
     useUpdateCouponMutation,
+    useVerifyCouponMutation,
 } = CouponManagement;
