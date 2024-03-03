@@ -19,28 +19,11 @@ const GPassword = ({
 }: GPasswordProps) => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     return (
-        <div>
-            {/* <Controller
-                name={name}
-                render={({ field }) => (
-                    <Input.Password
-                        id={name}
-                        type={type}
-                        placeholder={placeholder}
-                        visibilityToggle={{
-                            visible: passwordVisible,
-                            onVisibleChange: setPasswordVisible,
-                        }}
-                        disabled={disabled}
-                        className="custom-input"
-                        {...field}
-                    />
-                )}
-            /> */}
+        <div style={{ marginBottom: `${label && "10px"}` }}>
             <Controller
                 name={name}
                 render={({ field, fieldState: { error } }) => (
-                    <Form.Item label={label}>
+                    <Form.Item label={label} style={{ margin: "0px" }}>
                         <Input.Password
                             id={name}
                             type={type}

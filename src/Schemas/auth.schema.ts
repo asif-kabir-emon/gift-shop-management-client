@@ -40,3 +40,13 @@ export const registrationSchema = z.object({
             message: "Password must be at least 8 characters",
         }),
 });
+
+export const forgetPasswordSchema = z.object({
+    email: z
+        .string({
+            required_error: "Email is required",
+        })
+        .email({
+            message: "Invalid email",
+        }),
+});

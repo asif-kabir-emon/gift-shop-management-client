@@ -8,6 +8,8 @@ import { managerPaths } from "./manager.routes";
 import { sellerPaths } from "./seller.routes";
 import ProtectedRoute from "../components/layout/ProtectedRoute";
 import GiftProducts from "../pages/GiftProducts";
+import ForgetPassword from "../pages/ForgetPassword";
+import Cart from "../pages/Cart";
 
 const router = createBrowserRouter([
     {
@@ -18,8 +20,17 @@ const router = createBrowserRouter([
                 path: "/",
                 element: <GiftProducts />,
             },
+            {
+                path: "/products/cart",
+                element: (
+                    <ProtectedRoute role="all">
+                        <Cart />
+                    </ProtectedRoute>
+                ),
+            },
         ],
     },
+
     {
         path: "/manager",
         element: (
@@ -51,6 +62,14 @@ const router = createBrowserRouter([
         element: (
             <HiddenRouteAfterLogin>
                 <Registration />
+            </HiddenRouteAfterLogin>
+        ),
+    },
+    {
+        path: "/forget-password",
+        element: (
+            <HiddenRouteAfterLogin>
+                <ForgetPassword />
             </HiddenRouteAfterLogin>
         ),
     },

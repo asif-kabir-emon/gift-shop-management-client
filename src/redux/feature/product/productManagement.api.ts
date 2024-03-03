@@ -47,6 +47,7 @@ const ProductManagement = baseApi.injectEndpoints({
                 url: `/product/${productId}`,
                 method: "GET",
             }),
+            providesTags: ["products"],
         }),
         updateProduct: builder.mutation({
             query: (payload) => ({

@@ -1,23 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { toast } from "sonner";
-import { useAppSelector } from "../../../redux/hooks";
-import { useDeleteMultipleProductsMutation } from "../../../redux/feature/product/productManagement.api";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { TProduct, TUser } from "../../../types";
 import ProductSellModal from "./ProductSellModal";
 import { useCurrentToken } from "../../../redux/feature/auth/authSlice";
 import { verifyToken } from "../../../utils/verifyToken";
+import ProductDeleteModal from "./ProductDeleteModal";
+import { addToCart } from "../../../redux/feature/cart/cartSlice";
 
 type TProductDataProps = {
     productData: [TProduct];
 };
 
 const ProductListView = ({ productData }: TProductDataProps) => {
+    const dispatch = useAppDispatch();
     const token = useAppSelector(useCurrentToken);
     const user = token ? verifyToken(token) : null;
-
-    const [deleteProducts] = useDeleteMultipleProductsMutation();
 
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
@@ -32,23 +31,17 @@ const ProductListView = ({ productData }: TProductDataProps) => {
         }
     };
 
-    const handleRemoveProduct = async (items: string[]) => {
-        const toastId = toast.loading("Deleting ...");
-        try {
-            const res = await deleteProducts({
-                productIds: items,
-            }).unwrap();
-            if (res.success === true) {
-                toast.success(res.message, { id: toastId, duration: 2000 });
-            } else {
-                toast.error(res.message, { id: toastId, duration: 2000 });
-            }
-        } catch (error: any) {
-            toast.error(error.data.message || "Failed to Login", {
-                id: toastId,
-                duration: 2000,
-            });
-        }
+    const handleAddToCart = (product: TProduct) => {
+        dispatch(
+            addToCart({
+                productId: product._id,
+                productName: product.name,
+                image: product.imageURL,
+                maxQuantity: product.quantity,
+                price: product.price,
+                quantity: 1,
+            }),
+        );
     };
 
     return (
@@ -66,14 +59,10 @@ const ProductListView = ({ productData }: TProductDataProps) => {
                         </label>
                     </div>
                     <div>
-                        <button
-                            type="button"
-                            className="bg-red-500 text-white px-3 py-1 rounded-md disabled:opacity-50"
-                            disabled={selectedItems.length === 0}
-                            onClick={() => handleRemoveProduct(selectedItems)}
-                        >
-                            Delete
-                        </button>
+                        <ProductDeleteModal
+                            deleteProductsList={selectedItems}
+                            singleDelete={false}
+                        />
                     </div>
                 </div>
                 <div className="w-full bg-white px-5 py-3 rounded overflow-x-auto">
@@ -83,28 +72,21 @@ const ProductListView = ({ productData }: TProductDataProps) => {
                                 <th
                                     className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"} px-[2px] py-2 w-2`}
                                 ></th>
-                                <th className="px-4 py-2 text-left w-[40px]">
+                                <th className="px-4 py-2 text-left font-bold w-[40px]">
                                     Product
                                 </th>
-                                <th className="px-4 py-2 text-left">Name</th>
-                                <th className="px-4 py-2 text-left">Price</th>
-                                <th className="px-4 py-2 text-left">
+                                <th className="px-4 py-2 text-left font-bold">
+                                    Name
+                                </th>
+                                <th className="px-4 py-2 text-left font-bold">
+                                    Price
+                                </th>
+                                <th className="px-4 py-2 text-left font-bold">
                                     Quantity
                                 </th>
-                                <th
-                                    className={`${!user !== null && (user as TUser)?.role === "seller" ? "w-[60px]" : "w-[40px]"} py-2 text-left`}
-                                >
+                                <th className="px-4 py-2 text-left font-bold w-[2%]">
                                     Action
                                 </th>
-                                <th
-                                    className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"} py-2 text-left w-[40px]`}
-                                ></th>
-                                <th
-                                    className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"} py-2 text-left w-[60px]`}
-                                ></th>
-                                <th
-                                    className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"} py-2 text-left w-[40px]`}
-                                ></th>
                             </tr>
                         </thead>
                         {productData.length > 0 ? (
@@ -175,96 +157,101 @@ const ProductListView = ({ productData }: TProductDataProps) => {
                                         <td className="px-4 py-2">
                                             {product.name}
                                         </td>
-                                        <td className="px-4 py-2">
-                                            &#2547; {product.price}
+                                        <td className="px-4 py-2 flex flex-nowrap gap-1">
+                                            <span>&#2547;</span>
+                                            <span>{product.price}</span>
                                         </td>
                                         <td className="px-4 py-2">
                                             {product.quantity}
                                         </td>
-                                        <td
-                                            className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"} px-[2px] py-2`}
-                                        >
-                                            <Link
-                                                to={`/${(user as TUser)?.role}/update-gift/${product._id}`}
+                                        <th className="flex gap-[5px] px-4 py-2">
+                                            <div
+                                                className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"}`}
                                             >
-                                                <button className="bg-[var(--secondary-color)] text-[var(--primary-color)] text-center rounded-md p-2 w-[40px]">
-                                                    <svg
-                                                        className="size-5"
-                                                        fill="none"
-                                                        strokeWidth="1.5"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                                                        ></path>
-                                                    </svg>
-                                                </button>
-                                            </Link>
-                                        </td>
-                                        <td
-                                            className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"} px-[2px] py-2`}
-                                        >
-                                            <button
-                                                className="bg-red-600 hover:bg-red-400 text-[var(--primary-color)] text-center rounded-md p-2 w-[40px]"
-                                                onClick={() => {
-                                                    handleRemoveProduct([
-                                                        product._id,
-                                                    ]);
-                                                }}
-                                            >
-                                                <svg
-                                                    className="size-5"
-                                                    fill="none"
-                                                    strokeWidth="1.5"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                    xmlns="http://www.w3.org/2000/svg"
+                                                <Link
+                                                    to={`/${(user as TUser)?.role}/update-gift/${product._id}`}
                                                 >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                                                    ></path>
-                                                </svg>
-                                            </button>
-                                        </td>
-                                        <td
-                                            className={`${!user !== null && (user as TUser)?.role === "seller" ? "pl-[10px]" : ""}  px-[2px] py-2`}
-                                        >
-                                            <div>
-                                                <ProductSellModal
-                                                    productInfo={product}
+                                                    <button className="button-primary font-medium">
+                                                        <svg
+                                                            fill="none"
+                                                            strokeWidth="1.5"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            className="w-5 h-5"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                                                            ></path>
+                                                        </svg>
+                                                    </button>
+                                                </Link>
+                                            </div>
+                                            <div
+                                                className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"}`}
+                                            >
+                                                <ProductDeleteModal
+                                                    deleteProductsList={[
+                                                        product._id,
+                                                    ]}
+                                                    singleDelete={true}
                                                 />
                                             </div>
-                                        </td>
-                                        <td
-                                            className={`${!user !== null && (user as TUser)?.role === "seller" ? "hidden" : "pr-[10px]"} px-[2px] py-2`}
-                                        >
-                                            <Link
-                                                to={`/${(user as TUser)?.role}/add-gift/copied/${product._id}`}
-                                            >
-                                                <button className="bg-[var(--secondary-color)] text-[var(--primary-color)] text-center rounded-md p-2 w-[40px] font-bold">
+                                            <div>
+                                                <button
+                                                    className="button-primary font-medium"
+                                                    onClick={() =>
+                                                        handleAddToCart(product)
+                                                    }
+                                                >
                                                     <svg
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
                                                         strokeWidth={1.5}
                                                         stroke="currentColor"
-                                                        className="w-6 h-6"
+                                                        className="w-5 h-5"
                                                     >
                                                         <path
                                                             strokeLinecap="round"
                                                             strokeLinejoin="round"
-                                                            d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"
+                                                            d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
                                                         />
                                                     </svg>
                                                 </button>
-                                            </Link>
-                                        </td>
+                                            </div>
+                                            <div>
+                                                <ProductSellModal
+                                                    productInfo={product}
+                                                />
+                                            </div>
+                                            <div
+                                                className={`${!user !== null && (user as TUser)?.role === "seller" && "hidden"}`}
+                                            >
+                                                <Link
+                                                    to={`/${(user as TUser)?.role}/add-gift/copied/${product._id}`}
+                                                >
+                                                    <button className="button-primary font-medium">
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            strokeWidth={1.5}
+                                                            stroke="currentColor"
+                                                            className="w-5 h-5"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                                </Link>
+                                            </div>
+                                        </th>
                                     </tr>
                                 ))}
                             </tbody>

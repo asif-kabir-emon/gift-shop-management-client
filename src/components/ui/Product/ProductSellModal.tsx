@@ -170,7 +170,7 @@ const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
         <div>
             <button
                 onClick={showModal}
-                className="bg-[var(--secondary-color)] text-[var(--primary-color)] text-center rounded-md p-2 w-full font-bold"
+                className="button-primary font-normal w-full"
             >
                 Sell
             </button>

@@ -68,7 +68,7 @@ const Login = () => {
                     resolver={zodResolver(loginSchema)}
                     disableReset={true}
                 >
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-2">
                         <GInput
                             type="email"
                             name="email"
@@ -82,21 +82,19 @@ const Login = () => {
                             label="Password"
                         />
                         <div className="flex justify-start">
-                            <a
-                                href="#"
+                            <Link
+                                to="/forget-password"
                                 className="text-[var(--secondary-color)] hover:underline"
                             >
                                 Forgot Password?
-                            </a>
+                            </Link>
                         </div>
-                        <div>
-                            <button
-                                type="submit"
-                                className="bg-[var(--secondary-color)] text-[var(--primary-color)] w-full py-2 rounded-lg"
-                            >
-                                Login
-                            </button>
-                        </div>
+                        <button
+                            type="submit"
+                            className="bg-[var(--secondary-color)] text-[var(--primary-color)] w-full py-2 rounded-lg"
+                        >
+                            Login
+                        </button>
                     </div>
                 </GForm>
                 <Divider className="my-6" />

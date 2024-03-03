@@ -3,29 +3,9 @@
 @tailwind utilities;
 
 :root {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    font-weight: 400;
-
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-
     --background-color: #f9f9f9;
     --primary-color: #ffffff;
     --secondary-color: #111111;
     --tertiary-color: #2165c1;
-
-    background-color: var(--background-color);
-}
-
-.custom-input:focus {
-    border-color: var(--secondary-color);
-    box-shadow: none;
-}
-
-.custom-input:hover {
-    border-color: var(--secondary-color);
-    box-shadow: none;
+    --warning-color: #ff0000;
 }

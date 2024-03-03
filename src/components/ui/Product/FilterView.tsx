@@ -125,7 +125,7 @@ const FilterView = () => {
                         label="Name"
                         placeholder="Search by name"
                     />
-                    <div className="select-none my-[10px]">
+                    <div className="my-[10px]">
                         <h2>Price Range</h2>
                         <div className="flex items-center gap-1 py-1">
                             <GInput

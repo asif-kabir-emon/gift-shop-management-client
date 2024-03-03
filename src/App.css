@@ -1,0 +1,80 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
+
+* {
+    font-family: "Lato", sans-serif;
+    /* font-family: "Rubik", sans-serif; */
+    font-weight: 400;
+    font-style: normal;
+
+    box-sizing: border-box;
+}
+
+.custom-input:focus {
+    border-color: var(--secondary-color);
+    box-shadow: none;
+}
+
+.custom-input:hover {
+    border-color: var(--secondary-color);
+    box-shadow: none;
+}
+
+.button-primary {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button-primary:hover {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+.button-primary-outline {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button-primary-outline:hover {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.button-cancel {
+    background-color: var(--warning-color);
+    color: var(--primary-color);
+    border: 1px solid var(--warning-color);
+    border-radius: 5px;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button-cancel:hover {
+    background-color: var(--primary-color);
+    color: var(--warning-color);
+}
+
+.button-cancel-outline {
+    background-color: var(--primary-color);
+    color: var(--warning-color);
+    border: 1px solid var(--warning-color);
+    border-radius: 5px;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button-cancel-outline:hover {
+    background-color: var(--warning-color);
+    color: var(--primary-color);
+}
