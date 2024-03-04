@@ -10,6 +10,8 @@ import ProtectedRoute from "../components/layout/ProtectedRoute";
 import GiftProducts from "../pages/GiftProducts";
 import ForgetPassword from "../pages/ForgetPassword";
 import Cart from "../pages/Cart";
+import Checkout from "../pages/Checkout";
+import Invoice from "../pages/Invoice";
 
 const router = createBrowserRouter([
     {
@@ -25,6 +27,22 @@ const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute role="all">
                         <Cart />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/products/cart/check-out",
+                element: (
+                    <ProtectedRoute role="all">
+                        <Checkout />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/products/cart/check-out/invoice/:id",
+                element: (
+                    <ProtectedRoute role="all">
+                        <Invoice />
                     </ProtectedRoute>
                 ),
             },

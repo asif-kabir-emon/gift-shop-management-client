@@ -23,6 +23,13 @@ const CouponManagement = baseApi.injectEndpoints({
                 method: "GET",
             }),
         }),
+        getCouponByName: builder.mutation({
+            query: (data) => ({
+                url: `/coupon/coupon-by-name`,
+                method: "POST",
+                body: data,
+            }),
+        }),
         deleteCoupon: builder.mutation({
             query: (id) => ({
                 url: `/coupon/delete-coupon/${id}`,
@@ -52,6 +59,7 @@ export const {
     useCreateCouponMutation,
     useGetAllCouponsQuery,
     useGetCouponByIdQuery,
+    useGetCouponByNameMutation,
     useDeleteCouponMutation,
     useUpdateCouponMutation,
     useVerifyCouponMutation,

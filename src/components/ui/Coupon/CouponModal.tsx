@@ -1,24 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Input, Modal } from "antd";
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { useAppDispatch } from "../../../redux/hooks";
 import { useState } from "react";
-import { useVerifyCouponMutation } from "../../../redux/feature/coupon/couponManagement.api";
-import { TCartItem } from "../../../redux/feature/cart/cartSlice";
-import { setCouponInfo } from "../../../redux/feature/coupon/couponSlice";
-
-const calculateTotalAmount = (cartItems: TCartItem[]) => {
-    return cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-};
+import { useGetCouponByNameMutation } from "../../../redux/feature/coupon/couponManagement.api";
+import { setCoupon } from "../../../redux/feature/coupon/couponSlice";
 
 const CouponModal = () => {
-    const cart = useAppSelector((state) => state.cart);
-    const [verifyCoupon] = useVerifyCouponMutation();
     const dispatch = useAppDispatch();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [couponCode, setCouponCode] = useState("");
     const [isCouponValid, setIsCouponValid] = useState(false);
     const [isCheckedCoupon, setIsCheckedCoupon] = useState(false);
+    const [coupon] = useGetCouponByNameMutation();
 
     const showModal = () => {
         setIsModalOpen(true);
@@ -31,34 +25,36 @@ const CouponModal = () => {
         setIsModalOpen(false);
     };
 
-    const verifyCouponHandler = async (
-        couponCode: string,
-        orderAmount: number,
-    ) => {
-        if (!couponCode || couponCode == "" || !orderAmount || orderAmount < 0)
-            return false;
+    const couponDetailsHandler = async (couponCode: string) => {
+        if (!couponCode || couponCode == "") return;
 
         try {
-            const res = await verifyCoupon({
-                code: couponCode,
-                orderAmount: orderAmount,
-            }).unwrap();
+            const res = await coupon({ code: couponCode }).unwrap();
             if (res.success === true) {
-                setIsCouponValid(true);
+                console.log(res.data);
                 dispatch(
-                    setCouponInfo({
-                        couponCode: couponCode,
-                        discount: res.data.discountAmount,
+                    setCoupon({
+                        couponCode: res.data.code,
+                        couponDetails: res.data,
                     }),
                 );
                 handleCancel();
             } else {
-                setIsCouponValid(false);
+                dispatch(
+                    setCoupon({
+                        couponCode: "",
+                        couponDetails: null,
+                    }),
+                );
             }
         } catch (error: any) {
-            setIsCouponValid(false);
+            dispatch(
+                setCoupon({
+                    couponCode: "",
+                    couponDetails: null,
+                }),
+            );
         }
-        setIsCheckedCoupon(true);
     };
 
     return (
@@ -90,10 +86,7 @@ const CouponModal = () => {
                 <div>
                     <button
                         onClick={() => {
-                            verifyCouponHandler(
-                                couponCode,
-                                calculateTotalAmount(cart.cartItems),
-                            );
+                            couponDetailsHandler(couponCode);
                         }}
                         className="button-primary w-full !py-3"
                     >

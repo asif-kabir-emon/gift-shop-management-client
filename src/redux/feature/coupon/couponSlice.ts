@@ -2,28 +2,45 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export type TCoupon = {
+    code: string;
+    discountType: "percentage" | "fixed";
+    discountAmount: number;
+    minOrder: number;
+    haveMaxDiscount: boolean;
+    maxDiscount?: number;
+    startDate: string;
+    expiryDate: string;
+    isDeleted?: boolean;
+};
+
+export type TCouponState = {
+    couponDetails: TCoupon | null;
     couponCode: string;
-    discount: number;
 };
 
 const coupon = localStorage.getItem("coupon");
 
-const initialState: TCoupon = {
+const initialState: TCouponState = {
+    couponDetails: coupon ? JSON.parse(coupon).couponDetails : null,
     couponCode: coupon ? JSON.parse(coupon).couponCode : "",
-    discount: coupon ? JSON.parse(coupon).discount : 0,
 };
 
 const couponSlice = createSlice({
     name: "coupon",
     initialState,
     reducers: {
-        setCouponInfo: (state, action) => {
+        setCoupon: (state, action) => {
+            state.couponDetails = action.payload.couponDetails;
             state.couponCode = action.payload.couponCode;
-            state.discount = action.payload.discount;
             localStorage.setItem("coupon", JSON.stringify(action.payload));
+        },
+        removeCoupon: (state) => {
+            state.couponDetails = null;
+            state.couponCode = "";
+            localStorage.removeItem("coupon");
         },
     },
 });
 
-export const { setCouponInfo } = couponSlice.actions;
+export const { setCoupon, removeCoupon } = couponSlice.actions;
 export default couponSlice.reducer;

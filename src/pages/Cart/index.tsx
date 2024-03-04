@@ -7,20 +7,56 @@ import {
     decreaseCart,
     removeFromCart,
 } from "../../redux/feature/cart/cartSlice";
-import { useEffect } from "react";
-import { useVerifyCouponMutation } from "../../redux/feature/coupon/couponManagement.api";
-import { setCouponInfo } from "../../redux/feature/coupon/couponSlice";
-import CouponModal from "../../components/ui/Coupon/CouponModal";
+import { TCoupon, setCoupon } from "../../redux/feature/coupon/couponSlice";
+import { Input } from "antd";
+import { useState } from "react";
+import { useGetCouponByNameMutation } from "../../redux/feature/coupon/couponManagement.api";
 
 const calculateTotalAmount = (cartItems: TCartItem[]) => {
     return cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+};
+
+const calculateDiscount = (totalAmount: number, coupon: TCoupon) => {
+    if (!coupon) {
+        return 0;
+    }
+
+    const currentDate = new Date().toISOString().split("T")[0];
+    if (coupon.startDate > currentDate || coupon.expiryDate < currentDate) {
+        return 0;
+    }
+
+    let discountAmount = 0;
+    if (coupon.minOrder > totalAmount) {
+        discountAmount = 0;
+    } else if (coupon.haveMaxDiscount === true && coupon.maxDiscount) {
+        if (coupon.discountType === "percentage") {
+            const tempDiscountAmount =
+                (totalAmount * coupon.discountAmount) / 100;
+
+            if (tempDiscountAmount > coupon.maxDiscount) {
+                discountAmount = coupon.maxDiscount;
+            } else {
+                discountAmount = tempDiscountAmount;
+            }
+        } else {
+            discountAmount = coupon.discountAmount;
+        }
+    } else {
+        if (coupon.discountType === "percentage") {
+            discountAmount = (totalAmount * coupon.discountAmount) / 100;
+        } else {
+            discountAmount = coupon.discountAmount;
+        }
+    }
+
+    return discountAmount;
 };
 
 const Cart = () => {
     const cart = useAppSelector((state) => state.cart);
     const coupon = useAppSelector((state) => state.coupon);
     const dispatch = useAppDispatch();
-    const [verifyCoupon] = useVerifyCouponMutation();
 
     const handleAddToCart = (product: TCartItem) => {
         if (product.quantity === product.maxQuantity) {
@@ -37,42 +73,44 @@ const Cart = () => {
         dispatch(removeFromCart(product));
     };
 
-    useEffect(() => {
-        const handleDiscount = async () => {
-            try {
-                const res = await verifyCoupon({
-                    code: coupon.couponCode,
-                    orderAmount: calculateTotalAmount(cart.cartItems),
-                }).unwrap();
-                if (res.success === true) {
-                    dispatch(
-                        setCouponInfo({
-                            couponCode: coupon.couponCode,
-                            discount: res.data.discountAmount,
-                        }),
-                    );
-                } else {
-                    dispatch(
-                        setCouponInfo({
-                            couponCode: coupon.couponCode,
-                            discount: res.data.discountAmount,
-                        }),
-                    );
-                }
-            } catch (error: any) {
+    const [couponCode, setCouponCode] = useState("");
+    const [isCheckedCoupon, setIsCheckedCoupon] = useState(false);
+    const [isCouponValid, setIsCouponValid] = useState(false);
+    const [couponValidation] = useGetCouponByNameMutation();
+
+    const couponDetailsHandler = async (couponCode: string) => {
+        if (!couponCode || couponCode == "") return;
+
+        try {
+            const res = await couponValidation({ code: couponCode }).unwrap();
+            if (res.success === true) {
                 dispatch(
-                    setCouponInfo({
-                        couponCode: coupon.couponCode,
-                        discount: 0,
+                    setCoupon({
+                        couponCode: res.data.code,
+                        couponDetails: res.data,
                     }),
                 );
+                setIsCouponValid(true);
+            } else {
+                dispatch(
+                    setCoupon({
+                        couponCode: "",
+                        couponDetails: null,
+                    }),
+                );
+                setIsCouponValid(false);
             }
-        };
-
-        return () => {
-            handleDiscount();
-        };
-    }, [cart]);
+        } catch (error: any) {
+            dispatch(
+                setCoupon({
+                    couponCode: "",
+                    couponDetails: null,
+                }),
+            );
+            setIsCouponValid(false);
+        }
+        setIsCheckedCoupon(true);
+    };
 
     return (
         <div className="m-5 flex justify-center">
@@ -84,7 +122,7 @@ const Cart = () => {
                 <div className="flex flex-col xl:flex-row xl:items-start gap-5 my-10">
                     <div className="flex flex-nowrap">
                         {cart.cartItems.length > 0 ? (
-                            <div className="flex flex-col gap-3 xl:w-[500px]">
+                            <div className="flex flex-col gap-3 w-full xl:w-[500px]">
                                 {cart.cartItems.map((cartItem) => (
                                     <div
                                         key={cartItem.productId}
@@ -180,9 +218,35 @@ const Cart = () => {
                     <div className="bg-[--primary-color] px-5 py-10 rounded md:w-[400px]">
                         <div className="flex justify-between">
                             <span>Discount</span>
-                            <CouponModal />
                         </div>
-                        <div>
+                        <div className="bg-white rounded-lg mt-1 mb-5">
+                            <div className="flex">
+                                <Input
+                                    type="text"
+                                    placeholder="Enter your coupon code"
+                                    className="w-full border-[1px] rounded-l-md rounded-r-none"
+                                    value={couponCode}
+                                    onChange={(e) =>
+                                        setCouponCode(e.target.value)
+                                    }
+                                />
+                                <button
+                                    onClick={() => {
+                                        couponDetailsHandler(couponCode);
+                                    }}
+                                    className="button-primary w-[200px] !rounded-l-none !py-2"
+                                >
+                                    Apply Discount
+                                </button>
+                            </div>
+                            {isCheckedCoupon === true &&
+                                isCouponValid === false && (
+                                    <span className="text-red-500">
+                                        Invalid Coupon
+                                    </span>
+                                )}
+                        </div>
+                        <div className="mt-1 mb-7">
                             <small className="text-[13px]">
                                 You can add a discount code at the checkout
                             </small>
@@ -208,7 +272,15 @@ const Cart = () => {
                         </div>
                         <div className="flex justify-between">
                             <span>Discount</span>
-                            <span>&#2547; {coupon.discount.toFixed(2)}</span>
+                            <span>
+                                &#2547;{" "}
+                                {coupon.couponDetails
+                                    ? calculateDiscount(
+                                          calculateTotalAmount(cart.cartItems),
+                                          coupon.couponDetails,
+                                      )
+                                    : 0}
+                            </span>
                         </div>
                         <hr className="border-[--secondary-color] my-3" />
                         <div className="flex justify-between font-extrabold text-[16px]">
@@ -217,7 +289,14 @@ const Cart = () => {
                                 &#2547;{" "}
                                 {Math.round(
                                     calculateTotalAmount(cart.cartItems) -
-                                        coupon.discount,
+                                        (coupon.couponDetails
+                                            ? calculateDiscount(
+                                                  calculateTotalAmount(
+                                                      cart.cartItems,
+                                                  ),
+                                                  coupon.couponDetails,
+                                              )
+                                            : 0),
                                 ).toFixed(2)}
                             </span>
                         </div>

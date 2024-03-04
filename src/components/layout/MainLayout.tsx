@@ -4,7 +4,12 @@ import SideBar from "./SideBar";
 import { logout } from "../../redux/feature/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { Link } from "react-router-dom";
+import { TCartItem } from "../../redux/feature/cart/cartSlice";
 const { Header, Content } = Layout;
+
+const countQuantity = (cart: TCartItem[]) => {
+    return cart.reduce((acc, item) => acc + item.quantity, 0);
+};
 
 const MainLayout = () => {
     const {
@@ -36,9 +41,10 @@ const MainLayout = () => {
                                         />
                                     </svg>
                                     <span className="absolute flex justify-center items-center pt-2 text-[8px]">
-                                        {useAppSelector(
-                                            (state) =>
-                                                state.cart.cartTotalQuantity,
+                                        {countQuantity(
+                                            useAppSelector(
+                                                (state) => state.cart.cartItems,
+                                            ),
                                         )}
                                     </span>
                                 </div>

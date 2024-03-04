@@ -12,23 +12,16 @@ export type TCartItem = {
 
 type TCartState = {
     cartItems: TCartItem[];
-    cartTotalQuantity: number;
-    cartTotalAmount: number;
-    discount: number;
 };
 
 const parsedCartItems = localStorage.getItem("cart")
     ? JSON.parse(localStorage.getItem("cart") ?? "")
     : {
           cartItems: [],
-          cartTotalQuantity: 0,
       };
 
 const initialState: TCartState = {
     cartItems: parsedCartItems.cartItems || [],
-    cartTotalQuantity: parsedCartItems.cartTotalQuantity || 0,
-    discount: 0,
-    cartTotalAmount: 0,
 };
 
 const cartSlice = createSlice({
@@ -40,8 +33,6 @@ const cartSlice = createSlice({
             const existingItem = state.cartItems.find(
                 (item) => item.productId === newItem.productId,
             );
-
-            state.cartTotalQuantity += 1;
 
             if (!existingItem) {
                 state.cartItems.push({
@@ -76,17 +67,10 @@ const cartSlice = createSlice({
                 existingItem.quantity--;
             }
 
-            state.cartTotalQuantity -= 1;
-
             localStorage.setItem("cart", JSON.stringify(state.cartItems));
         },
         removeFromCart: (state, action) => {
             const id = action.payload.productId;
-
-            const existingItem = state.cartItems.find(
-                (item) => item.productId === id,
-            );
-            state.cartTotalQuantity -= existingItem?.quantity ?? 0;
 
             state.cartItems = state.cartItems.filter(
                 (item) => item.productId !== id,
@@ -95,7 +79,6 @@ const cartSlice = createSlice({
         },
         clearCart: (state) => {
             state.cartItems = [];
-            state.cartTotalQuantity = 0;
             localStorage.removeItem("cart");
         },
     },
