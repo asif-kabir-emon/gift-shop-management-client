@@ -7,7 +7,7 @@
 1. **Clone the GitHub Repository on local machine:**
     
     ```sh
-    git clone https://github.com/Porgramming-Hero-web-course/l2-b2-assignment-6-fronten-asif-kabir-emon.git
+    git clone https://github.com/asif-kabir-emon/gift-shop-management-client.git
     ```
 
 2. **Install dependencies:**
