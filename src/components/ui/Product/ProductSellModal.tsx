@@ -1,37 +1,41 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
-import { useSellProductMutation } from "../../../redux/feature/SaleInfo/sellManagement.api";
 import { useState } from "react";
-import { TProduct, TSellInfo, TUser } from "../../../types";
+import { TProduct } from "../../../types";
 import { Button, Col, Input, Modal, Row } from "antd";
 import GForm from "../../form/GForm";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { sellProductSchema } from "../../../Schemas/sell.schema";
 import GInput from "../../form/GInput";
-import { useAppSelector } from "../../../redux/hooks";
-import { useCurrentToken } from "../../../redux/feature/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { logout, useCurrentToken } from "../../../redux/feature/auth/authSlice";
 import { verifyToken } from "../../../utils/verifyToken";
 import moment from "moment";
 import GDatePickerWithDefaultValue from "../../form/GDatePickerWithDefaultValue";
-import { useVerifyCouponMutation } from "../../../redux/feature/coupon/couponManagement.api";
-import generatePDF, { Margin, Resolution } from "react-to-pdf";
+import {
+    useGetCouponByNameMutation,
+    useVerifyCouponMutation,
+} from "../../../redux/feature/coupon/couponManagement.api";
+import { setCoupon } from "../../../redux/feature/coupon/couponSlice";
+import { addToCart } from "../../../redux/feature/cart/cartSlice";
+import { useNavigate } from "react-router";
 
 const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+
+    const [couponInfo] = useGetCouponByNameMutation();
+    const [verifyCoupon] = useVerifyCouponMutation();
+
     const token = useAppSelector(useCurrentToken);
     const user = verifyToken(token as string) || {};
 
-    const [sellSteps, setSellSteps] = useState<
-        "sellForm" | "confirmForm" | "memoForm"
-    >("sellForm");
+    if (!user) {
+        dispatch(logout());
+    }
 
     const [couponCode, setCouponCode] = useState("");
-    const [sellInfo, setSellInfo] = useState<TSellInfo | null>(null);
-    const [invoiceInfo, setInvoiceInfo] = useState<any>({});
-
-    const [sellProduct] = useSellProductMutation();
-    const [verifyCoupon] = useVerifyCouponMutation();
-
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const showModal = () => {
@@ -41,9 +45,6 @@ const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
     const handleCancel = () => {
         setIsModalOpen(false);
         setCouponCode("");
-        setSellInfo(null);
-        setSellSteps("sellForm");
-        setInvoiceInfo({});
     };
 
     const verifyCouponHandler = async (
@@ -94,77 +95,62 @@ const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
             return;
         }
 
-        const sellInfo: TSellInfo = {
-            quantity: Number(data.quantity),
-            sellingPrice: Number(productInfo.price),
-            totalAmount: Number(data.quantity) * Number(productInfo.price),
-            sellDate: moment().format("YYYY-MM-DD"),
-            buyerName: data.buyerName,
-            productId: productInfo._id,
-            sellerId: (user as TUser)?.id.toString(),
-            couponCode: "",
-            discount: 0,
-            paidAmount: Number(data.quantity) * Number(productInfo.price),
-        };
-
-        if (couponCode) {
-            const coupon = await verifyCouponHandler(
-                couponCode,
-                sellInfo.totalAmount,
-            );
-            console.log(coupon);
-            if (coupon?.success === true) {
-                const discount = coupon.data.discountAmount;
-                if (discount > 0) {
-                    sellInfo.couponCode = couponCode;
-                    sellInfo.discount = discount;
-                    sellInfo.paidAmount = sellInfo.totalAmount - discount;
-                }
-            }
-        }
-
-        setSellInfo(sellInfo);
-        setSellSteps("confirmForm");
-    };
-
-    const sellProductHandler = async () => {
-        const toastId = toast.loading("Selling ...", {
-            position: "top-right",
-        });
-        try {
-            const res = await sellProduct(sellInfo as TSellInfo).unwrap();
-            if (res.success === true) {
-                toast.success("Product sold successfully", {
-                    id: toastId,
-                    duration: 2000,
-                });
-                setSellSteps("memoForm");
-                setInvoiceInfo(res.data);
-            } else {
-                toast.error(res.message || "Failed to sell product", {
-                    id: toastId,
-                    duration: 2000,
-                });
-            }
-        } catch (error: any) {
-            toast.error(error.data.message || "Failed to sell product", {
-                id: toastId,
-                duration: 2000,
+        if (couponCode !== "") {
+            const toastId = toast.loading("Verifying coupon ...", {
+                position: "top-center",
             });
+            try {
+                const res = await couponInfo({ code: couponCode }).unwrap();
+                if (res.success === true) {
+                    dispatch(
+                        setCoupon({
+                            couponCode: res.data.code,
+                            couponDetails: res.data,
+                        }),
+                    );
+                    toast.success("Valid Coupon", {
+                        id: toastId,
+                        duration: 2000,
+                    });
+                } else {
+                    dispatch(
+                        setCoupon({
+                            couponCode: "",
+                            couponDetails: null,
+                        }),
+                    );
+                    toast.error("Invalid Coupon", {
+                        id: toastId,
+                        duration: 2000,
+                    });
+                }
+            } catch (error: any) {
+                dispatch(
+                    setCoupon({
+                        couponCode: "",
+                        couponDetails: null,
+                    }),
+                );
+                toast.error(error.data.message || "Failed to verify coupon", {
+                    id: toastId,
+                    duration: 2000,
+                });
+            }
         }
-    };
 
-    const getTargetElement = () => document.getElementById(productInfo._id);
-    const downloadPdf = () =>
-        generatePDF(getTargetElement, {
-            resolution: Resolution.EXTREME,
-            page: {
-                margin: Margin.LARGE,
-                format: "A4",
-                orientation: "portrait",
-            },
-            filename: `Invoice.pdf`,
-        });
+        dispatch(
+            addToCart({
+                productId: productInfo._id,
+                productName: productInfo.name,
+                image: productInfo.imageURL,
+                maxQuantity: productInfo.quantity,
+                price: productInfo.price,
+                quantity: data.quantity,
+            }),
+        );
+
+        navigate("/products/cart/check-out");
+    };
 
     return (
         <div>
@@ -180,250 +166,86 @@ const ProductSellModal = ({ productInfo }: { productInfo: TProduct }) => {
                 onCancel={handleCancel}
                 footer={null}
             >
-                {sellSteps === "sellForm" && (
-                    <div>
-                        <div className="my-5 text-[12px] bg-slate-300 px-3 py-2 font-medium">
-                            <h4>Product Name: {productInfo.name}</h4>
-                            <h4>
-                                Price: &#2547; {}
-                                {productInfo.price} x 1
-                            </h4>
-                            <h4>Available Quantity: {productInfo.quantity}</h4>
-                        </div>
-                        <GForm
-                            onSubmit={onSubmit}
-                            resolver={zodResolver(sellProductSchema)}
-                            disableReset={true}
-                        >
-                            <GInput
-                                type="text"
-                                name="buyerName"
-                                placeholder="Enter Buyer Name"
-                                label="Buyer Name"
-                            />
-                            <GInput
-                                type="number"
-                                name="quantity"
-                                placeholder="Enter Quantity"
-                                label="Quantity"
-                            />
-                            <GDatePickerWithDefaultValue
-                                name="sellDate"
-                                label="Date"
-                                placeholder="Select Date"
-                                disabled={true}
-                                defaultValue={moment().format("YYYY-MM-DD")}
-                            />
-                            <div>
-                                <p className="text-[14px] font-medium mb-2">
-                                    Apply Promo Code
-                                </p>
-                                <Row>
-                                    <Col span={18}>
-                                        <Input
-                                            type="text"
-                                            value={couponCode}
-                                            placeholder="Enter Coupon Code"
-                                            onChange={(e) =>
-                                                setCouponCode(e.target.value)
-                                            }
-                                            className="w-full rounded-r-none rounded-l-md"
-                                        />
-                                    </Col>
-                                    <Col span={6}>
-                                        <Button
-                                            htmlType="button"
-                                            className="bg-[var(--secondary-color)] min-w-[100px] text-[var(--primary-color)] m-0 rounded-l-none rounded-r-md"
-                                            onClick={() =>
-                                                verifyCouponHandler(
-                                                    couponCode,
-                                                    20,
-                                                )
-                                            }
-                                        >
-                                            Verify Coupon
-                                        </Button>
-                                    </Col>
-                                </Row>
-                            </div>
-                            <div className="flex justify-center gap-3 mt-10 mb-5">
-                                <Button
-                                    onClick={() => {
-                                        handleCancel();
-                                    }}
-                                    className="bg-[var(--secondary-color)] min-w-[100px] text-[var(--primary-color)] m-0 rounded-md"
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    htmlType="submit"
-                                    className="bg-[var(--secondary-color)] min-w-[100px] text-[var(--primary-color)] m-0 rounded-md"
-                                >
-                                    Sell
-                                </Button>
-                            </div>
-                        </GForm>
-                    </div>
-                )}
-                {sellSteps === "confirmForm" && (
-                    <div>
-                        <h4 className="font-semibold text-[16px] py-4 text-center">
-                            Are you sure to sell the product?
+                <div>
+                    <div className="my-5 text-[12px] bg-slate-300 px-3 py-2 font-medium">
+                        <h4>Product Name: {productInfo.name}</h4>
+                        <h4>
+                            Price: &#2547; {}
+                            {productInfo.price} x 1
                         </h4>
-                        <div className="text-[12px] bg-gray-200 px-2 py-1 rounded-md">
-                            <h4>Product Name: {productInfo.name}</h4>
-                            <h4>
-                                Price: &#2547; {}
-                                {productInfo.price} x {sellInfo?.quantity}
-                            </h4>
-                            <h4>
-                                Total Amount: &#2547; {sellInfo?.totalAmount}
-                            </h4>
-                            <h4>
-                                Discount Amount: &#2547; {sellInfo?.discount}
-                            </h4>
-                            <h4>
-                                Payable Amount: &#2547; {sellInfo?.paidAmount}
-                            </h4>
+                        <h4>Available Quantity: {productInfo.quantity}</h4>
+                    </div>
+                    <GForm
+                        onSubmit={onSubmit}
+                        resolver={zodResolver(sellProductSchema)}
+                        disableReset={true}
+                    >
+                        <GInput
+                            type="text"
+                            name="buyerName"
+                            placeholder="Enter Buyer Name"
+                            label="Buyer Name"
+                        />
+                        <GInput
+                            type="number"
+                            name="quantity"
+                            placeholder="Enter Quantity"
+                            label="Quantity"
+                        />
+                        <GDatePickerWithDefaultValue
+                            name="sellDate"
+                            label="Date"
+                            placeholder="Select Date"
+                            disabled={true}
+                            defaultValue={moment().format("YYYY-MM-DD")}
+                        />
+                        <div>
+                            <p className="text-[14px] font-medium mb-2">
+                                Apply Promo Code
+                            </p>
+                            <Row>
+                                <Col span={18}>
+                                    <Input
+                                        type="text"
+                                        value={couponCode}
+                                        placeholder="Enter Coupon Code"
+                                        onChange={(e) =>
+                                            setCouponCode(e.target.value)
+                                        }
+                                        className="w-full rounded-r-none rounded-l-md"
+                                    />
+                                </Col>
+                                <Col span={6}>
+                                    <Button
+                                        htmlType="button"
+                                        className="bg-[var(--secondary-color)] min-w-[100px] text-[var(--primary-color)] m-0 rounded-l-none rounded-r-md"
+                                        onClick={() =>
+                                            verifyCouponHandler(couponCode, 20)
+                                        }
+                                    >
+                                        Verify Coupon
+                                    </Button>
+                                </Col>
+                            </Row>
                         </div>
-                        <div className="mt-7 mb-2 flex gap-1 justify-center">
+                        <div className="flex justify-center gap-3 mt-10 mb-5">
                             <Button
-                                htmlType="button"
-                                className="bg-[var(--secondary-color)] min-w-[100px] text-[var(--primary-color)] m-0 rounded-md"
                                 onClick={() => {
                                     handleCancel();
                                 }}
+                                className="bg-[var(--secondary-color)] min-w-[100px] text-[var(--primary-color)] m-0 rounded-md"
                             >
                                 Cancel
                             </Button>
                             <Button
-                                htmlType="button"
-                                className="bg-[var(--secondary-color)] min-w-[100px] text-[var(--primary-color)] m-0 rounded-md"
-                                onClick={sellProductHandler}
-                            >
-                                Confirm
-                            </Button>
-                        </div>
-                    </div>
-                )}
-                {sellSteps === "memoForm" && (
-                    <div>
-                        <h4 className="text-[16px] text-green-700 font-bold text-center my-5">
-                            Product sold successfully
-                        </h4>
-                        <div
-                            className="bg-gray-100 px-5 py-10 flex flex-col gap-2"
-                            id={productInfo._id}
-                        >
-                            <div>
-                                <h4 className="text-[18px] font-semibold text-center mb-5">
-                                    Invoice
-                                </h4>
-                                <div className="flex gap-2">
-                                    <span className="font-semibold">
-                                        Invoice ID:
-                                    </span>
-                                    <span>{invoiceInfo[0]?._id}</span>
-                                </div>
-                                <div className="flex gap-2">
-                                    <span className="font-semibold">Date:</span>
-                                    <span>
-                                        {moment(
-                                            invoiceInfo[0]?.sellDate,
-                                        ).format("DD MMMM YYYY, h:mm:ss a")}
-                                    </span>
-                                </div>
-                            </div>
-                            <div>
-                                <div className="flex gap-2">
-                                    <span className="font-semibold">
-                                        Buyer Name:
-                                    </span>
-                                    <span>{sellInfo?.buyerName}</span>
-                                </div>
-                            </div>
-                            <div>
-                                <div className="flex gap-2">
-                                    <span className="font-semibold">
-                                        Product Id:
-                                    </span>
-                                    <span>{sellInfo?.productId}</span>
-                                </div>
-                                <div className="flex gap-2">
-                                    <span className="font-semibold">
-                                        Product Name:
-                                    </span>
-                                    <span>{productInfo.name}</span>
-                                </div>
-                                <div className="flex gap-2">
-                                    <span className="font-semibold">
-                                        Price Per Unit:
-                                    </span>
-                                    <span>&#2547;{productInfo.price}</span>
-                                </div>
-                                <div className="flex gap-2">
-                                    <span className="font-semibold">
-                                        Product Quantity:
-                                    </span>
-                                    <span>{sellInfo?.quantity}</span>
-                                </div>
-                                <div className="flex gap-2">
-                                    <span className="font-semibold">
-                                        Total Amount:
-                                    </span>
-                                    <span>&#2547;{sellInfo?.totalAmount}</span>
-                                </div>
-                            </div>
-                            <div>
-                                {sellInfo?.couponCode && (
-                                    <div className="flex gap-2">
-                                        <span className="font-semibold">
-                                            Coupon Code:
-                                        </span>
-                                        <span>{sellInfo?.couponCode}</span>
-                                    </div>
-                                )}
-                                <div className="flex gap-2">
-                                    <span className="font-semibold">
-                                        Discount Amount:
-                                    </span>
-                                    <span>&#2547;{sellInfo?.discount}</span>
-                                </div>
-                            </div>
-                            <div>
-                                <div className="flex gap-2">
-                                    <span className="font-semibold">
-                                        -------------------------------------------------------
-                                    </span>
-                                </div>
-                                <div className="flex gap-2">
-                                    <span className="font-semibold">
-                                        Total Paid Amount:
-                                    </span>
-                                    <span>&#2547;{sellInfo?.paidAmount}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex gap-2 justify-center mt-7 mb-2">
-                            <Button
-                                htmlType="button"
-                                className="bg-[var(--secondary-color)] min-w-[100px] text-[var(--primary-color)] m-0 rounded-md"
-                                onClick={() => {
-                                    handleCancel();
-                                }}
-                            >
-                                Close
-                            </Button>
-                            <Button
-                                onClick={downloadPdf}
-                                htmlType="button"
+                                htmlType="submit"
                                 className="bg-[var(--secondary-color)] min-w-[100px] text-[var(--primary-color)] m-0 rounded-md"
                             >
-                                Download Invoice
+                                Sell
                             </Button>
                         </div>
-                    </div>
-                )}
+                    </GForm>
+                </div>
             </Modal>
         </div>
     );

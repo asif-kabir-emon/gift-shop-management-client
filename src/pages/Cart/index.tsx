@@ -11,6 +11,7 @@ import { TCoupon, setCoupon } from "../../redux/feature/coupon/couponSlice";
 import { Input } from "antd";
 import { useState } from "react";
 import { useGetCouponByNameMutation } from "../../redux/feature/coupon/couponManagement.api";
+import { useNavigate } from "react-router";
 
 const calculateTotalAmount = (cartItems: TCartItem[]) => {
     return cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -54,6 +55,7 @@ const calculateDiscount = (totalAmount: number, coupon: TCoupon) => {
 };
 
 const Cart = () => {
+    const navigate = useNavigate();
     const cart = useAppSelector((state) => state.cart);
     const coupon = useAppSelector((state) => state.coupon);
     const dispatch = useAppDispatch();
@@ -301,7 +303,15 @@ const Cart = () => {
                             </span>
                         </div>
                         <div className="flex justify-center mt-10">
-                            <button className="button-primary w-full">
+                            <button
+                                onClick={() => {
+                                    navigate("/products/cart/check-out");
+                                }}
+                                className={`${cart.cartItems.length === 0 ? "button-disabled" : "button-primary"} w-full`}
+                                disabled={
+                                    cart.cartItems.length === 0 ? true : false
+                                }
+                            >
                                 Checkout
                             </button>
                         </div>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import GForm from "../../components/form/GForm";
@@ -15,7 +16,6 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import { clearCart } from "../../redux/feature/cart/cartSlice";
 import { removeCoupon } from "../../redux/feature/coupon/couponSlice";
-import { useEffect } from "react";
 
 const Checkout = () => {
     const dispatch = useAppDispatch();
@@ -32,12 +32,6 @@ const Checkout = () => {
     if (!user) {
         dispatch(logout());
     }
-
-    useEffect(() => {
-        if (cartItems.length === 0) {
-            navigate("/");
-        }
-    }, [cartItems, navigate]);
 
     const tableData = cartItems.map((item, index) => {
         return {
@@ -92,6 +86,8 @@ const Checkout = () => {
     ];
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+        if (cartItems.length === 0) return;
+
         const toastId = toast.loading("Selling Products...");
 
         const invoiceData = {
@@ -110,7 +106,7 @@ const Checkout = () => {
                           couponDetails,
                       )
                     : 0),
-            couponCode: couponDetails?.code || null,
+            couponCode: couponDetails?.code || "",
             buyerName: data.buyerName,
             products: cartItems.map((item) => {
                 return {
@@ -127,7 +123,7 @@ const Checkout = () => {
 
         try {
             const res = await createInvoice(invoiceData).unwrap();
-            console.log(res);
+            // console.log(res);
 
             if (res.success) {
                 toast.success("Products Sold Successfully", { id: toastId });
@@ -239,7 +235,11 @@ const Checkout = () => {
                             </div>
                         </div>
                     </div>
-                    <button type="submit" className="button-primary w-full">
+                    <button
+                        type="submit"
+                        className={`${cartItems.length === 0 ? "button-disabled" : "button-primary"} w-full`}
+                        disabled={cartItems.length === 0 ? true : false}
+                    >
                         Checkout
                     </button>
                 </GForm>

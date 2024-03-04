@@ -29,6 +29,16 @@
     transition: background-color 0.3s ease;
 }
 
+.button-primary:disabled {
+    background-color: var(--disabled-color);
+    color: var(--primary-color);
+    border: 1px solid var(--disabled-color);
+    border-radius: 5px;
+    padding: 7px 14px;
+    cursor: not-allowed;
+    transition: background-color 0.3s ease;
+}
+
 .button-primary:hover {
     background-color: var(--primary-color);
     color: var(--secondary-color);
@@ -77,4 +87,14 @@
 .button-cancel-outline:hover {
     background-color: var(--warning-color);
     color: var(--primary-color);
+}
+
+.button-disabled {
+    background-color: var(--disabled-color);
+    color: var(--primary-color);
+    border: 1px solid var(--disabled-color);
+    border-radius: 5px;
+    padding: 7px 14px;
+    cursor: not-allowed;
+    transition: background-color 0.3s ease;
 }
