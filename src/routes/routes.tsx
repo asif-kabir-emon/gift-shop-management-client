@@ -7,11 +7,11 @@ import { routeGenerator } from "../utils/routeGenerator";
 import { managerPaths } from "./manager.routes";
 import { sellerPaths } from "./seller.routes";
 import ProtectedRoute from "../components/layout/ProtectedRoute";
-import GiftProducts from "../pages/GiftProducts";
 import ForgetPassword from "../pages/ForgetPassword";
 import Cart from "../pages/Cart/Cart";
 import Checkout from "../pages/Checkout/Checkout";
-import Invoice from "../pages/Invoice";
+import Invoice from "../pages/Invoice/Invoice";
+import Dashboard from "../pages/Dashboard/Dashboard";
 
 const router = createBrowserRouter([
     {
@@ -20,7 +20,7 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/",
-                element: <GiftProducts />,
+                element: <Dashboard />,
             },
             {
                 path: "/products/cart",

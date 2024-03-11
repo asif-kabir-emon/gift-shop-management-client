@@ -1,35 +1,46 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { Spin } from "antd";
-import { useGetSellInfoQuery } from "../../redux/feature/SaleInfo/sellManagement.api";
+import { Pagination, Table } from "antd";
 import moment from "moment";
+import { useGetAllInvoicesQuery } from "../../redux/feature/Invoice/invoice.api";
+import { Link } from "react-router-dom";
 
-const SellHistory = () => {
+const Dashboard = () => {
     const [dateRange, setDateRange] = useState({
         startDate: moment().subtract(1, "days").format("YYYY-MM-DD"),
         endDate: moment().format("YYYY-MM-DD"),
     });
-    const { data: sellHistory, isLoading: isSellHistoryLoading } =
-        useGetSellInfoQuery(dateRange, {
-            refetchOnMountOrArgChange: true,
-        });
+    const [page, setPage] = useState(1);
+
+    const {
+        data: invoiceData,
+        isLoading,
+        isFetching,
+    } = useGetAllInvoicesQuery({
+        startDate: dateRange.startDate,
+        endDate: dateRange.endDate,
+        page: page,
+    });
+
+    const metaData = invoiceData?.meta;
 
     const [totalSell, setTotalSell] = useState(0);
     const [historyType, setHistoryType] = useState("today");
 
     useEffect(() => {
-        if (sellHistory && !isSellHistoryLoading) {
+        if (invoiceData && !isLoading && !isFetching) {
             let total = 0;
-            sellHistory.data.forEach((item: any) => {
-                total += item.paidAmount;
+            invoiceData.data.forEach((item: any) => {
+                total += item.totalAmountAfterDiscount;
             });
             setTotalSell(total);
         }
-    }, [isSellHistoryLoading, historyType, sellHistory]);
+    }, [isLoading, isFetching, historyType, invoiceData]);
 
     const handleHistoryType = (type: string) => {
         setHistoryType(type);
+        setPage(1);
 
         if (type === "today") {
             setDateRange({
@@ -56,6 +67,65 @@ const SellHistory = () => {
             });
         }
     };
+
+    const tableData = invoiceData?.data.map((item: any) => {
+        return {
+            key: item._id,
+            customer: item.buyerName,
+            products: item.products,
+            price: item.totalAmountAfterDiscount,
+        };
+    });
+
+    const columns = [
+        {
+            title: "Invoice No.",
+            dataIndex: "key",
+            key: "key",
+        },
+        {
+            title: "Customer Name",
+            dataIndex: "customer",
+            key: "customer",
+        },
+        {
+            title: "Quantity",
+            dataIndex: "quantity",
+            key: "quantity",
+            render: (_text: any, record: any) => (
+                <div>
+                    {record.products.reduce((acc: any, item: any) => {
+                        return acc + item.quantity;
+                    }, 0)}
+                </div>
+            ),
+        },
+        {
+            title: "Price",
+            dataIndex: "price",
+            key: "price",
+        },
+        {
+            title: "Date",
+            dataIndex: "date",
+            key: "date",
+            render: (_text: any, record: any) => (
+                <div>{moment(record.createdAt).format("YYYY-MM-DD")}</div>
+            ),
+        },
+        {
+            title: "Action",
+            dataIndex: "action",
+            key: "action",
+            render: (_text: any, record: any) => (
+                <div>
+                    <Link to={`/products/cart/check-out/invoice/${record.key}`}>
+                        <button className="button-primary">View Invoice</button>
+                    </Link>
+                </div>
+            ),
+        },
+    ];
 
     return (
         <div className="flex flex-col gap-4">
@@ -117,82 +187,23 @@ const SellHistory = () => {
                 </div>
             </div>
             <div className="bg-white px-3 py-5 rounded overflow-x-auto min-h-[220px]">
-                <table className="w-full md:text-lg">
-                    <thead>
-                        <tr className="bg-black text-white">
-                            <th
-                                className="px-3 py-2 text-start"
-                                style={{ whiteSpace: "nowrap" }}
-                            >
-                                Item Name
-                            </th>
-                            <th
-                                className="px-3 py-2 text-start"
-                                style={{ whiteSpace: "nowrap" }}
-                            >
-                                Customer Name
-                            </th>
-                            <th
-                                className="px-3 py-2 text-start"
-                                style={{ whiteSpace: "nowrap" }}
-                            >
-                                Quantity
-                            </th>
-                            <th
-                                className="px-3 py-2 text-start"
-                                style={{ whiteSpace: "nowrap" }}
-                            >
-                                Price
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {isSellHistoryLoading === false ? (
-                            sellHistory.data.length > 0 ? (
-                                sellHistory.data.map((item: any) => (
-                                    <tr
-                                        className="text-start border-[1px] border-l-0 border-r-0 border-gray-200 hover:bg-gray-100"
-                                        key={item._id}
-                                    >
-                                        <td className="px-3 py-1">
-                                            {item.productId.name}
-                                        </td>
-                                        <td className="px-3 py-1">
-                                            {item.buyerName}
-                                        </td>
-                                        <td className="px-3 py-1">
-                                            {item.quantity}
-                                        </td>
-                                        <td className="px-3 py-1">
-                                            TK. {item.paidAmount}
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td
-                                        colSpan={4}
-                                        className="text-center py-[50px]"
-                                    >
-                                        No data found
-                                    </td>
-                                </tr>
-                            )
-                        ) : (
-                            <tr>
-                                <td
-                                    colSpan={4}
-                                    className="text-center py-[50px]"
-                                >
-                                    <Spin tip="Loading"></Spin>
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                <Table
+                    columns={columns}
+                    dataSource={tableData}
+                    loading={isLoading || isFetching}
+                    scroll={{ x: 500 }}
+                    pagination={false}
+                />
+                <Pagination
+                    current={page}
+                    total={metaData?.total}
+                    pageSize={metaData?.limit}
+                    onChange={(page) => setPage(page)}
+                    className="mt-3 text-center"
+                />
             </div>
         </div>
     );
 };
 
-export default SellHistory;
+export default Dashboard;

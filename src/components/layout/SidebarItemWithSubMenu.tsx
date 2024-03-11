@@ -33,7 +33,7 @@ const SidebarItemWithSubMenu = ({
                 {!isOpen && (
                     <div
                         style={{ top: 0, left: "100%" }}
-                        className={`absolute flex flex-col gap-1 left-full rounded-md p-2 ml-6 bg-white shadow-md text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}
+                        className={`absolute flex flex-col gap-1 left-full rounded-md p-2 ml-6 bg-white shadow-xl border-[1px] text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}
                     >
                         {data?.menus?.map((menu) => (
                             <li key={menu.name}>
@@ -41,7 +41,7 @@ const SidebarItemWithSubMenu = ({
                                     to={menu.path}
                                     className="link capitalize"
                                 >
-                                    <span className="block whitespace-nowrap">
+                                    <span className="block whitespace-nowrap min-w-[100px]">
                                         {menu.name}
                                     </span>
                                 </NavLink>

@@ -100,8 +100,6 @@ const SideBar = () => {
         }
     }, [isTabletMode]);
 
-    console.log("sidebarItems", sideBarItems);
-
     return (
         <div>
             <div

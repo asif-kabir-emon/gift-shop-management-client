@@ -12,7 +12,7 @@ const InvoiceApi = baseApi.injectEndpoints({
         }),
         getAllInvoices: builder.query({
             query: (query) => ({
-                url: "/sale-info/get-sale-info",
+                url: "/invoice/get-invoice",
                 method: "GET",
                 params: query,
             }),

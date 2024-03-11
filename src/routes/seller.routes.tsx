@@ -1,7 +1,7 @@
 import { MdDashboard, MdShoppingCart } from "react-icons/md";
 import Coupons from "../pages/Coupons/Coupons";
 import GiftProducts from "../pages/GiftProducts";
-import SellHistory from "../pages/SellHistory";
+import Dashboard from "../pages/Dashboard/Dashboard";
 import { RiCoupon2Fill } from "react-icons/ri";
 
 export const sellerPaths = [
@@ -9,7 +9,7 @@ export const sellerPaths = [
         name: "Dashboard",
         path: "dashboard",
         icon: MdDashboard,
-        element: <SellHistory />,
+        element: <Dashboard />,
     },
     {
         name: "Gift List",
