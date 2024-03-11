@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactNode } from "react";
 
 export type TUser = {
@@ -16,6 +17,7 @@ export type TRoute = {
 export type TUserPath = {
     name?: string;
     path?: string;
+    icon?: any;
     element?: ReactNode;
     children?: TUserPath[];
 };
@@ -31,4 +33,14 @@ export type TSidebarItem = {
     key: string;
     label: ReactNode;
     children?: TChildrenMenuItemType[];
+};
+
+export type TMenuItem = {
+    name: string;
+    path: string;
+    icon: any;
+    menus?: {
+        name: string;
+        path: string;
+    }[];
 };

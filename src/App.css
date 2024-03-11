@@ -98,3 +98,15 @@
     cursor: not-allowed;
     transition: background-color 0.3s ease;
 }
+
+.link {
+    @apply p-2.5 flex rounded-md gap-6 items-center md:cursor-pointer cursor-default duration-300 font-medium;
+}
+
+.link:hover {
+    @apply bg-blue-50 text-black;
+}
+
+.active {
+    @apply bg-blue-200 text-blue-600;
+}

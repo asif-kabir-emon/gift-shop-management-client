@@ -9,8 +9,8 @@ import { sellerPaths } from "./seller.routes";
 import ProtectedRoute from "../components/layout/ProtectedRoute";
 import GiftProducts from "../pages/GiftProducts";
 import ForgetPassword from "../pages/ForgetPassword";
-import Cart from "../pages/Cart";
-import Checkout from "../pages/Checkout";
+import Cart from "../pages/Cart/Cart";
+import Checkout from "../pages/Checkout/Checkout";
 import Invoice from "../pages/Invoice";
 
 const router = createBrowserRouter([

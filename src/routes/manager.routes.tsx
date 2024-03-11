@@ -1,22 +1,25 @@
 // import Dashboard from "../pages/Dashboard";
 import AddCoupon from "../pages/Manager/CouponManagement/AddCoupon";
 import AddProduct from "../pages/Manager/ProductManagement/AddProduct";
-import BulkDelete from "../pages/Manager/BulkDelete";
 import CopyProduct from "../pages/Manager/ProductManagement/CopyProduct";
 import UpdateProduct from "../pages/Manager/ProductManagement/UpdateProduct";
 import SellHistory from "../pages/SellHistory";
 import UpdateCoupon from "../pages/Manager/CouponManagement/UpdateCoupon";
 import GiftProducts from "../pages/GiftProducts";
-import Coupons from "../pages/Coupons";
+import Coupons from "../pages/Coupons/Coupons";
+import { MdDashboard, MdShoppingCart } from "react-icons/md";
+import { RiCoupon2Fill } from "react-icons/ri";
 
 export const managerPaths = [
-    // {
-    //     name: "Dashboard",
-    //     path: "dashboard",
-    //     element: <Dashboard />,
-    // },
     {
-        name: "Gift Management",
+        name: "Dashboard",
+        path: "dashboard",
+        icon: MdDashboard,
+        element: <SellHistory />,
+    },
+    {
+        name: "Products",
+        icon: MdShoppingCart,
         children: [
             {
                 name: "Gift List",
@@ -36,15 +39,11 @@ export const managerPaths = [
                 path: "add-gift/copied/:productId",
                 element: <CopyProduct />,
             },
-            {
-                name: "Bulk Gift Delete",
-                path: "bulk-product-delete",
-                element: <BulkDelete />,
-            },
         ],
     },
     {
-        name: "Coupon Management",
+        name: "Coupon",
+        icon: RiCoupon2Fill,
         children: [
             {
                 name: "Coupon List",
@@ -61,10 +60,5 @@ export const managerPaths = [
                 element: <UpdateCoupon />,
             },
         ],
-    },
-    {
-        name: "Sell History",
-        path: "sell-history",
-        element: <SellHistory />,
     },
 ];
