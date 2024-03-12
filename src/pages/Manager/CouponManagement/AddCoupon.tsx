@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FieldValues, SubmitHandler } from "react-hook-form";
-import GForm from "../../../../components/form/GForm";
-import GInput from "../../../../components/form/GInput";
-import GDatePicker from "../../../../components/form/GDatePicker";
-import GSelect from "../../../../components/form/GSelect";
+import GForm from "../../../components/form/GForm";
+import GInput from "../../../components/form/GInput";
+import GDatePicker from "../../../components/form/GDatePicker";
+import GSelect from "../../../components/form/GSelect";
 import {
     discountTypeOptions,
     haveMaxDiscountOptions,
-} from "../../../../constants/coupon";
+} from "../../../constants/coupon";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { couponSchema } from "../../../../Schemas/coupon.schema";
-import { useCreateCouponMutation } from "../../../../redux/feature/coupon/couponManagement.api";
+import { couponSchema } from "../../../Schemas/coupon.schema";
+import { useCreateCouponMutation } from "../../../redux/feature/coupon/couponManagement.api";
 import { toast } from "sonner";
-import { TCreateCoupon } from "../../../../types/couponManagement.type";
+import { TCreateCoupon } from "../../../types/couponManagement.type";
 import { useNavigate } from "react-router";
 
 const AddCoupon = () => {

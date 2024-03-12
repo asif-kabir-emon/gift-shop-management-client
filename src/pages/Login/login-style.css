@@ -1,9 +1,0 @@
-.custom-input:focus {
-    border-color: var(--secondary-color);
-    box-shadow: none;
-}
-
-.custom-input:hover {
-    border-color: var(--secondary-color);
-    box-shadow: none;
-}

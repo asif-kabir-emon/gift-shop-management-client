@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Pagination, Table } from "antd";
 import moment from "moment";
-import { useGetAllInvoicesQuery } from "../../redux/feature/Invoice/invoice.api";
+import { useGetAllInvoicesQuery } from "../redux/feature/Invoice/invoice.api";
 import { Link } from "react-router-dom";
 
 const Dashboard = () => {
@@ -129,9 +129,6 @@ const Dashboard = () => {
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="text-center bg-white bg-opacity-40 p-4">
-                <h1 className="text-2xl font-bold">Sell History</h1>
-            </div>
             <div>
                 <div className="flex">
                     <div className="flex flex-row bg-gray-300 rounded-md text-[16px]">

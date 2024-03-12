@@ -8,10 +8,10 @@ import { managerPaths } from "./manager.routes";
 import { sellerPaths } from "./seller.routes";
 import ProtectedRoute from "../components/layout/ProtectedRoute";
 import ForgetPassword from "../pages/ForgetPassword";
-import Cart from "../pages/Cart/Cart";
-import Checkout from "../pages/Checkout/Checkout";
-import Invoice from "../pages/Invoice/Invoice";
-import Dashboard from "../pages/Dashboard/Dashboard";
+import Cart from "../pages/Cart";
+import Checkout from "../pages/Checkout";
+import Invoice from "../pages/Invoice";
+import Dashboard from "../pages/Dashboard";
 
 const router = createBrowserRouter([
     {

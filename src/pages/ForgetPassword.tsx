@@ -1,8 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import GForm from "../../components/form/GForm";
-import { forgetPasswordSchema } from "../../Schemas/auth.schema";
+import GForm from "../components/form/GForm";
+import { forgetPasswordSchema } from "../Schemas/auth.schema";
 import { FieldValues, SubmitHandler } from "react-hook-form";
-import GInput from "../../components/form/GInput";
+import GInput from "../components/form/GInput";
 import { Link } from "react-router-dom";
 
 const ForgetPassword = () => {

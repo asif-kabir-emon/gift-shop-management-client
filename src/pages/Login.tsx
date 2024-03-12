@@ -1,19 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Divider } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import "./login-style.css";
-import GForm from "../../components/form/GForm";
-import GInput from "../../components/form/GInput";
-import GPassword from "../../components/form/GPassword";
+import GForm from "../components/form/GForm";
+import GInput from "../components/form/GInput";
+import GPassword from "../components/form/GPassword";
 import { FieldValues } from "react-hook-form";
-import { useAppDispatch } from "../../redux/hooks";
-import { useLoginMutation } from "../../redux/feature/auth/auth.api";
-import { setUser } from "../../redux/feature/auth/authSlice";
+import { useAppDispatch } from "../redux/hooks";
+import { useLoginMutation } from "../redux/feature/auth/auth.api";
+import { setUser } from "../redux/feature/auth/authSlice";
 import { toast } from "sonner";
-import { verifyToken } from "../../utils/verifyToken";
+import { verifyToken } from "../utils/verifyToken";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "../../Schemas/auth.schema";
-import { TUser } from "../../types";
+import { loginSchema } from "../Schemas/auth.schema";
+import { TUser } from "../types";
 
 const Login = () => {
     const dispatch = useAppDispatch();

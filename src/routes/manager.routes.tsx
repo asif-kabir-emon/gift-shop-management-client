@@ -3,10 +3,10 @@ import AddCoupon from "../pages/Manager/CouponManagement/AddCoupon";
 import AddProduct from "../pages/Manager/ProductManagement/AddProduct";
 import CopyProduct from "../pages/Manager/ProductManagement/CopyProduct";
 import UpdateProduct from "../pages/Manager/ProductManagement/UpdateProduct";
-import Dashboard from "../pages/Dashboard/Dashboard";
+import Dashboard from "../pages/Dashboard";
 import UpdateCoupon from "../pages/Manager/CouponManagement/UpdateCoupon";
 import GiftProducts from "../pages/GiftProducts";
-import Coupons from "../pages/Coupons/Coupons";
+import Coupons from "../pages/Coupons";
 import { MdDashboard, MdShoppingCart } from "react-icons/md";
 import { RiCoupon2Fill } from "react-icons/ri";
 

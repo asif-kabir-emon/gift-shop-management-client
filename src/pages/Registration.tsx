@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Divider } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import "./registration-style.css";
-import GForm from "../../components/form/GForm";
+import GForm from "../components/form/GForm";
 import { FieldValues, SubmitHandler } from "react-hook-form";
-import GInput from "../../components/form/GInput";
-import GPassword from "../../components/form/GPassword";
-import { useRegisterMutation } from "../../redux/feature/auth/auth.api";
+import GInput from "../components/form/GInput";
+import GPassword from "../components/form/GPassword";
+import { useRegisterMutation } from "../redux/feature/auth/auth.api";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registrationSchema } from "../../Schemas/auth.schema";
+import { registrationSchema } from "../Schemas/auth.schema";
 
 const Registration = () => {
     const navigate = useNavigate();

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams } from "react-router";
-import { useGetInvoiceByIdQuery } from "../../redux/feature/Invoice/invoice.api";
+import { useGetInvoiceByIdQuery } from "../redux/feature/Invoice/invoice.api";
 import { Table } from "antd";
 import moment from "moment";
 import generatePDF, { Margin, Resolution } from "react-to-pdf";

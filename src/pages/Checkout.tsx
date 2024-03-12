@@ -1,21 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FieldValues, SubmitHandler } from "react-hook-form";
-import GForm from "../../components/form/GForm";
-import GInput from "../../components/form/GInput";
+import GForm from "../components/form/GForm";
+import GInput from "../components/form/GInput";
 import { Col, Row, Table } from "antd";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { calculateDiscount, calculateTotalAmount } from "../../utils/cart";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { calculateDiscount, calculateTotalAmount } from "../utils/cart";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { checkoutSchema } from "../../Schemas/checkout.schema";
-import { logout, useCurrentToken } from "../../redux/feature/auth/authSlice";
-import { verifyToken } from "../../utils/verifyToken";
-import { TUser } from "../../types";
-import { useCreateInvoiceMutation } from "../../redux/feature/Invoice/invoice.api";
+import { checkoutSchema } from "../Schemas/checkout.schema";
+import { logout, useCurrentToken } from "../redux/feature/auth/authSlice";
+import { verifyToken } from "../utils/verifyToken";
+import { TUser } from "../types";
+import { useCreateInvoiceMutation } from "../redux/feature/Invoice/invoice.api";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
-import { clearCart } from "../../redux/feature/cart/cartSlice";
-import { removeCoupon } from "../../redux/feature/coupon/couponSlice";
+import { clearCart } from "../redux/feature/cart/cartSlice";
+import { removeCoupon } from "../redux/feature/coupon/couponSlice";
 
 const Checkout = () => {
     const dispatch = useAppDispatch();

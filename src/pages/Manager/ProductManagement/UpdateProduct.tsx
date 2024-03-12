@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router";
-import GForm from "../../../../components/form/GForm";
-import GInput from "../../../../components/form/GInput";
-import GTextBox from "../../../../components/form/GTextBox";
-import GSelect from "../../../../components/form/GSelect";
+import GForm from "../../../components/form/GForm";
+import GInput from "../../../components/form/GInput";
+import GTextBox from "../../../components/form/GTextBox";
+import GSelect from "../../../components/form/GSelect";
 import {
-    useAddNewProductMutation,
     useGetAllBrandQuery,
     useGetAllCategoryQuery,
     useGetAllOccasionQuery,
     useGetAllThemeQuery,
     useGetProductByIdQuery,
-} from "../../../../redux/feature/product/productManagement.api";
+    useUpdateProductMutation,
+} from "../../../redux/feature/product/productManagement.api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { productSchema } from "../../../../Schemas/product.schema";
+import { productSchema } from "../../../Schemas/product.schema";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import { Spin } from "antd";
 
@@ -30,10 +30,10 @@ function convertNumbersToStrings(
     return newObj;
 }
 
-const CopyProduct = () => {
+const UpdateProduct = () => {
     const navigate = useNavigate();
     const param = useParams();
-    const [addNewProduct] = useAddNewProductMutation();
+    const [updateProduct] = useUpdateProductMutation();
 
     const { data: productData, isLoading: isProductDataLoading } =
         useGetProductByIdQuery(param.productId);
@@ -86,10 +86,10 @@ const CopyProduct = () => {
     );
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-        const toastId = toast.loading("Creating Product...", {
+        const toastId = toast.loading("Updating Product...", {
             position: "top-right",
         });
-        const productInfo = {
+        const updatedProductInfo = {
             name: data.name,
             price: Number(data.price),
             quantity: Number(data.quantity),
@@ -99,29 +99,26 @@ const CopyProduct = () => {
             occasion: data.occasion,
             theme: data.theme,
         };
-        console.log(data);
-
-        const formData = new FormData();
-        formData.append("data", JSON.stringify(productInfo));
-        // formData.append("file", data.imageURL);
 
         try {
-            const res = await addNewProduct(formData).unwrap();
-            console.log(res);
-            if (res.success) {
-                navigate("/manager/gift-list");
-                toast.success("Product Created Successfully", {
+            const res = await updateProduct({
+                id: param.productId,
+                productInfo: updatedProductInfo,
+            }).unwrap();
+            if (res.success === true) {
+                toast.success(res.message || "Product updated successfully", {
                     id: toastId,
                     duration: 2000,
                 });
+                navigate("/manager/gift-list");
             } else {
-                toast.error(res.message || "Failed to add product", {
+                toast.error(res.message || "Failed to update product", {
                     id: toastId,
                     duration: 2000,
                 });
             }
         } catch (error: any) {
-            toast.error(error.data.message || "Failed to add product", {
+            toast.error(error.data.message || "Failed to update product", {
                 id: toastId,
                 duration: 2000,
             });
@@ -134,7 +131,7 @@ const CopyProduct = () => {
                 <>
                     <div>
                         <h2 className="text-center bg-white py-3 text-3xl font-bold rounded">
-                            Add New Product
+                            Update Product
                         </h2>
                     </div>
                     <div className="bg-white px-5 py-3 rounded text-[16px]">
@@ -209,13 +206,13 @@ const CopyProduct = () => {
                                         navigate("/manager/gift-list")
                                     }
                                 >
-                                    Cancel
+                                    Discard
                                 </button>
                                 <button
                                     type="submit"
                                     className="bg-[var(--secondary-color)] text-[var(--primary-color)] px-5 py-2 rounded-lg"
                                 >
-                                    Add Product
+                                    Update Product
                                 </button>
                             </div>
                         </GForm>
@@ -230,4 +227,4 @@ const CopyProduct = () => {
     );
 };
 
-export default CopyProduct;
+export default UpdateProduct;

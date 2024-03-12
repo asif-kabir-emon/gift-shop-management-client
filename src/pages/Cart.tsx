@@ -1,16 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
     TCartItem,
     addToCart,
     decreaseCart,
     removeFromCart,
-} from "../../redux/feature/cart/cartSlice";
-import { TCoupon, setCoupon } from "../../redux/feature/coupon/couponSlice";
+} from "../redux/feature/cart/cartSlice";
+import { TCoupon, setCoupon } from "../redux/feature/coupon/couponSlice";
 import { Input } from "antd";
 import { useState } from "react";
-import { useGetCouponByNameMutation } from "../../redux/feature/coupon/couponManagement.api";
+import { useGetCouponByNameMutation } from "../redux/feature/coupon/couponManagement.api";
 import { useNavigate } from "react-router";
 
 const calculateTotalAmount = (cartItems: TCartItem[]) => {
