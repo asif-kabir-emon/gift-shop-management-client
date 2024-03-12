@@ -1,13 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams } from "react-router";
 import { useGetInvoiceByIdQuery } from "../redux/feature/Invoice/invoice.api";
-import { Table } from "antd";
+import { Spin, Table } from "antd";
 import moment from "moment";
 import generatePDF, { Margin, Resolution } from "react-to-pdf";
+import { Link } from "react-router-dom";
+import { verifyToken } from "../utils/verifyToken";
+import { useAppSelector } from "../redux/hooks";
+import { useCurrentToken } from "../redux/feature/auth/authSlice";
+import { TUser } from "../types";
 
 const Invoice = () => {
+    const token = useAppSelector(useCurrentToken);
+    const user = verifyToken(token || "");
+
     const params = useParams();
-    const { data: invoiceData, isLoading } = useGetInvoiceByIdQuery(params.id);
+    const {
+        data: invoiceData,
+        isLoading,
+        isFetching,
+    } = useGetInvoiceByIdQuery(params.id);
 
     const tableData =
         invoiceData?.data?.products.map(
@@ -51,7 +63,11 @@ const Invoice = () => {
             dataIndex: "price",
             key: "price",
             render: (_text: any, record: { price: number }) => {
-                return <span>&#2547; {record.price}</span>;
+                return (
+                    <span className="whitespace-nowrap">
+                        &#2547; {record.price}
+                    </span>
+                );
             },
         },
         {
@@ -67,7 +83,11 @@ const Invoice = () => {
                 _text: any,
                 record: { price: number; quantity: number },
             ) => {
-                return <span>&#2547; {record.price * record.quantity}</span>;
+                return (
+                    <span className="whitespace-nowrap">
+                        &#2547; {record.price * record.quantity}
+                    </span>
+                );
             },
         },
     ];
@@ -88,7 +108,7 @@ const Invoice = () => {
     return (
         <div>
             <div className="bg-[--primary-color] px-7 py-10">
-                {isLoading == false && (
+                {!isLoading && !isFetching ? (
                     <div>
                         <div
                             className="border-[1px] p-5 rounded"
@@ -99,7 +119,7 @@ const Invoice = () => {
                                     Invoice
                                 </h1>
                             </div>
-                            <div className="flex flex-col md:flex-row justify-between">
+                            <div className="flex flex-col-reverse md:flex-row justify-between">
                                 <div className="my-5 text-[16px]">
                                     <div className="flex gap-2">
                                         <span className="font-bold">
@@ -118,7 +138,7 @@ const Invoice = () => {
                                         </span>
                                     </div>
                                 </div>
-                                <div>
+                                <div className="my-5 text-[16px]">
                                     <div className="flex gap-2">
                                         <span className="font-bold">
                                             Invoice No:
@@ -152,7 +172,18 @@ const Invoice = () => {
                                             Total Quantity
                                         </span>
                                         <span>
-                                            {invoiceData.data.totalAmount}
+                                            {
+                                                // calculate total quantity
+                                                invoiceData.data.products.reduce(
+                                                    (
+                                                        acc: number,
+                                                        item: {
+                                                            quantity: number;
+                                                        },
+                                                    ) => acc + item.quantity,
+                                                    0,
+                                                )
+                                            }
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
@@ -169,7 +200,7 @@ const Invoice = () => {
                                         <span className="font-bold">
                                             Subtotal
                                         </span>
-                                        <span>
+                                        <span className="whitespace-nowrap">
                                             &#2547; {}
                                             {invoiceData.data.totalAmount}
                                         </span>
@@ -178,7 +209,7 @@ const Invoice = () => {
                                         <span className="font-bold">
                                             Discount
                                         </span>
-                                        <span>
+                                        <span className="whitespace-nowrap">
                                             &#2547; {}
                                             {invoiceData.data.discount}
                                         </span>
@@ -186,7 +217,7 @@ const Invoice = () => {
                                     <hr className="my-2 border-[1px]" />
                                     <div className="flex justify-between">
                                         <span className="font-bold">Total</span>
-                                        <span className="font-bold">
+                                        <span className="font-bold whitespace-nowrap">
                                             &#2547; {}
                                             {
                                                 invoiceData.data
@@ -207,7 +238,17 @@ const Invoice = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex justify-end mt-5">
+                        <div className="flex flex-col-reverse md:flex-row gap-2 justify-end mt-5">
+                            <Link to={`/${(user as TUser).role}/dashboard`}>
+                                <button className="button-primary w-full md:w-auto">
+                                    Return to Dashboard
+                                </button>
+                            </Link>
+                            <Link to={`/${(user as TUser).role}/gift-list`}>
+                                <button className="button-primary w-full md:w-auto">
+                                    Return to Products
+                                </button>
+                            </Link>
                             <button
                                 onClick={downloadPdf}
                                 className="button-primary"
@@ -215,6 +256,10 @@ const Invoice = () => {
                                 Download Invoice
                             </button>
                         </div>
+                    </div>
+                ) : (
+                    <div className="flex justify-center items-center h-[50vh]">
+                        <Spin tip="Loading"></Spin>
                     </div>
                 )}
             </div>

@@ -49,7 +49,7 @@ const SideBar = () => {
             break;
     }
 
-    const isTabletMode = useMediaQuery({ query: "(max-width: 768px)" });
+    const isTabletMode = useMediaQuery({ query: "(max-width: 1280px)" });
 
     const [isOpen, setIsOpen] = useState(isTabletMode ? false : true);
 
@@ -101,20 +101,21 @@ const SideBar = () => {
     }, [isTabletMode]);
 
     return (
-        <div>
+        <div
+            className={`${
+                !isTabletMode && (isOpen ? "w-[16rem]" : "w-[4rem]")
+            }`}
+        >
             <div
                 onClick={() => setIsOpen(false)}
-                className={`md:hidden fixed inset-0 max-h-screen z-[998] bg-black/50 ${
+                className={`${!isTabletMode && "hidden"} fixed inset-0 max-h-screen z-[998] bg-black/50 ${
                     isOpen ? "block" : "hidden"
                 }`}
             ></div>
-            <div className="md:hidden">
+            <div className={`${!isTabletMode && "hidden"} sticky top-0`}>
                 <NavBar
                     children={
-                        <div
-                            className="m-3 md:hidden"
-                            onClick={() => setIsOpen(true)}
-                        >
+                        <div className="m-3" onClick={() => setIsOpen(true)}>
                             <MdMenu size={30} />
                         </div>
                     }
@@ -123,7 +124,7 @@ const SideBar = () => {
             <motion.div
                 variants={sidebar_animation}
                 animate={isOpen ? "open" : "closed"}
-                className="bg-white top-0 shadow-xl z-[999] w-[16rem] max-w-[16rem] h-screen md:relative fixed"
+                className="bg-white top-0 shadow-xl z-[999] w-[16rem] max-w-[16rem] h-screen fixed"
             >
                 {/* Logo */}
                 <div className="flex items-center gap-2.5 font-medium border-b border-slate-300 py-3 mx-3">
@@ -137,8 +138,8 @@ const SideBar = () => {
                     </span>
                 </div>
                 {/* Menus */}
-                <div className="flex flex-col h-full">
-                    <ul className="px-2.5 text-[0.9rem] py-5 flex flex-col gap-1 font-medium">
+                <div className="max-h-full">
+                    <ul className="px-2.5 text-[0.9rem] py-5 flex flex-col gap-1 font-medium mt-2 mb-20 h-full">
                         {sideBarItems?.map((menu) => (
                             <div key={menu.name}>
                                 {!menu?.menus ? (
@@ -165,7 +166,7 @@ const SideBar = () => {
                             ? { x: 0, y: 0, rotate: 0 }
                             : { x: -10, y: 0, rotate: 180 }
                     }
-                    className="absolute w-fit h-fit z-50 right-2 bottom-5 cursor-pointer md:block hidden"
+                    className={`absolute w-fit h-fit z-50 right-2 bottom-5 cursor-pointer ${isTabletMode ? "hidden" : "block"} `}
                 >
                     <IoIosArrowBack
                         size={25}

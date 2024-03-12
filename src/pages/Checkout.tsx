@@ -3,7 +3,7 @@
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import GForm from "../components/form/GForm";
 import GInput from "../components/form/GInput";
-import { Col, Row, Table } from "antd";
+import { Table } from "antd";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { calculateDiscount, calculateTotalAmount } from "../utils/cart";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import { clearCart } from "../redux/feature/cart/cartSlice";
 import { removeCoupon } from "../redux/feature/coupon/couponSlice";
+import { Link } from "react-router-dom";
 
 const Checkout = () => {
     const dispatch = useAppDispatch();
@@ -146,102 +147,102 @@ const Checkout = () => {
                     disableReset={true}
                     resolver={zodResolver(checkoutSchema)}
                 >
-                    <Row gutter={16}>
-                        <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-                            <GInput
-                                type="text"
-                                name="buyerName"
-                                label="Buyer Name"
-                                placeholder="Enter Buyer Name"
-                            />
-                        </Col>
-                        <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-                            <GInput
-                                type="text"
-                                name="buyerEmail"
-                                label="Buyer Email"
-                                placeholder="Enter Buyer Email (Optional)"
-                            />
-                        </Col>
-                        <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-                            <GInput
-                                type="text"
-                                name="buyerContactNumber"
-                                label="Buyer Contact Number"
-                                placeholder="Enter Buyer Contact Number (Optional)"
-                            />
-                        </Col>
-                    </Row>
-                    <div className="mt-5">
-                        <Table
-                            columns={columns}
-                            dataSource={tableData}
-                            scroll={{ x: 500 }}
-                            pagination={false}
+                    <div className="bg-gray-100 p-3 rounded">
+                        <GInput
+                            type="text"
+                            name="buyerName"
+                            label="Buyer Name"
+                            placeholder="Enter Buyer Name"
                         />
                     </div>
-                    <div className="flex flex-col items-end gap-y-6 my-10">
-                        <div className="text-[14px] w-full  md:w-[250px]">
-                            <div className="flex justify-between">
-                                <span className="font-bold">
-                                    Total Quantity
-                                </span>
-                                <span>
-                                    {cartItems.reduce(
-                                        (acc, item) => acc + item.quantity,
-                                        0,
-                                    )}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-bold">Discount Code</span>
-                                <span>{couponDetails?.code}</span>
-                            </div>
-                            <hr className="my-2 border-[1px]" />
-                            <div className="flex justify-between">
-                                <span className="font-bold">Subtotal</span>
-                                <span>
-                                    &#2547; {}
-                                    {calculateTotalAmount(cartItems)}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-bold">Discount</span>
-                                <span>
-                                    &#2547; {}
-                                    {couponDetails
-                                        ? calculateDiscount(
-                                              calculateTotalAmount(cartItems),
-                                              couponDetails,
-                                          )
-                                        : 0}
-                                </span>
-                            </div>
-                            <hr className="my-2 border-[1px]" />
-                            <div className="flex justify-between">
-                                <span className="font-bold">Total</span>
-                                <span className="font-bold">
-                                    &#2547; {}
-                                    {calculateTotalAmount(cartItems) -
-                                        (couponDetails
+                    <div className="my-5 bg-gray-100 p-3 rounded">
+                        <div>
+                            <Table
+                                columns={columns}
+                                dataSource={tableData}
+                                scroll={{ x: 500 }}
+                                pagination={false}
+                            />
+                        </div>
+                        <div className="flex flex-col items-end gap-y-6 my-10">
+                            <div className="text-[14px] w-full  md:w-[250px]">
+                                <div className="flex justify-between">
+                                    <span className="font-bold">
+                                        Total Quantity
+                                    </span>
+                                    <span>
+                                        {cartItems.reduce(
+                                            (acc, item) => acc + item.quantity,
+                                            0,
+                                        )}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="font-bold">
+                                        Discount Code
+                                    </span>
+                                    <span>{couponDetails?.code}</span>
+                                </div>
+                                <hr className="my-2 border-[1px]" />
+                                <div className="flex justify-between">
+                                    <span className="font-bold">Subtotal</span>
+                                    <span>
+                                        &#2547; {}
+                                        {calculateTotalAmount(cartItems)}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="font-bold">Discount</span>
+                                    <span>
+                                        &#2547; {}
+                                        {couponDetails
                                             ? calculateDiscount(
                                                   calculateTotalAmount(
                                                       cartItems,
                                                   ),
                                                   couponDetails,
                                               )
-                                            : 0)}
-                                </span>
+                                            : 0}
+                                    </span>
+                                </div>
+                                <hr className="my-2 border-[1px]" />
+                                <div className="flex justify-between">
+                                    <span className="font-bold">Total</span>
+                                    <span className="font-bold">
+                                        &#2547; {}
+                                        {calculateTotalAmount(cartItems) -
+                                            (couponDetails
+                                                ? calculateDiscount(
+                                                      calculateTotalAmount(
+                                                          cartItems,
+                                                      ),
+                                                      couponDetails,
+                                                  )
+                                                : 0)}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <button
-                        type="submit"
-                        className={`${cartItems.length === 0 ? "button-disabled" : "button-primary"} w-full`}
-                        disabled={cartItems.length === 0 ? true : false}
-                    >
-                        Checkout
-                    </button>
+                    <div className="flex flex-col md:flex-row md:justify-end gap-2">
+                        <Link to={`/${(user as TUser).role}/dashboard`}>
+                            <button className="button-primary w-full !px-10">
+                                Go to Dashboard
+                            </button>
+                        </Link>
+                        <Link to={`/${(user as TUser).role}/gift-list`}>
+                            <button className="button-primary w-full !px-10">
+                                Go to Products
+                            </button>
+                        </Link>
+                        <button
+                            type="submit"
+                            className={`${cartItems.length === 0 ? "button-disabled" : "button-primary"} !px-10`}
+                            disabled={cartItems.length === 0 ? true : false}
+                        >
+                            Checkout
+                        </button>
+                    </div>
                 </GForm>
             </div>
         </div>

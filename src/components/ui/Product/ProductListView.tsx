@@ -146,7 +146,9 @@ const ProductListView = ({ productData }: TProductDataProps) => {
             dataIndex: "price",
             key: "price",
             render: (price) => {
-                return <span>&#2547; {price}</span>;
+                return (
+                    <span className="whitespace-nowrap">&#2547; {price}</span>
+                );
             },
         },
         {

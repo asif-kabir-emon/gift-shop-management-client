@@ -160,7 +160,7 @@ const Dashboard = () => {
                 </div>
             </div>
             <div className="bg-white p-4">
-                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-2">
                     <h1 className="text-xl font-bold flex gap-2">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"

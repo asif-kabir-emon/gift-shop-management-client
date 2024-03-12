@@ -12,7 +12,7 @@ const NavBar = ({ children }: { children: React.ReactNode }) => {
     const dispatch = useAppDispatch();
 
     return (
-        <div className="bg-white shadow flex justify-between items-center p-3 md:px-5 md:py-[18px] sticky top-0 z-[900]">
+        <div className="bg-white shadow flex justify-between items-center p-3 md:px-5 md:py-[18px] w-full">
             <div className="flex-1">{children}</div>
             <div className="flex gap-6">
                 <Link to="/products/cart">
