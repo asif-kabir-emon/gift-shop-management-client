@@ -57,34 +57,30 @@ const Registration = () => {
                     disableReset={true}
                     resolver={zodResolver(registrationSchema)}
                 >
-                    <div className="flex flex-col gap-3">
-                        <GInput
-                            type="text"
-                            name="name"
-                            placeholder="Enter your name"
-                            label="Name"
-                        />
-                        <GInput
-                            type="email"
-                            name="email"
-                            placeholder="Enter your email"
-                            label="Email"
-                        />
-                        <GPassword
-                            type="password"
-                            name="password"
-                            placeholder="Enter your password"
-                            label="Password"
-                        />
-                        <div>
-                            <button
-                                type="submit"
-                                className="bg-[var(--secondary-color)] text-[var(--primary-color)] w-full py-2 rounded-lg"
-                            >
-                                Sign Up
-                            </button>
-                        </div>
-                    </div>
+                    <GInput
+                        type="text"
+                        name="name"
+                        placeholder="Enter your name"
+                        label="Name"
+                    />
+                    <GInput
+                        type="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        label="Email"
+                    />
+                    <GPassword
+                        type="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        label="Password"
+                    />
+                    <button
+                        type="submit"
+                        className="bg-[var(--secondary-color)] text-[var(--primary-color)] w-full py-2 rounded-lg"
+                    >
+                        Sign Up
+                    </button>
                 </GForm>
                 <Divider className="my-6" />
                 <div className="flex justify-start">
@@ -92,7 +88,7 @@ const Registration = () => {
                         Already have an account?{" "}
                         <Link
                             to="/login"
-                            className="text-[var(--secondary-color)] hover:underline"
+                            className="text-[var(--secondary-color)] underline"
                         >
                             Sign In
                         </Link>

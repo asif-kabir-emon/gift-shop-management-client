@@ -67,34 +67,32 @@ const Login = () => {
                     resolver={zodResolver(loginSchema)}
                     disableReset={true}
                 >
-                    <div className="flex flex-col gap-2">
-                        <GInput
-                            type="email"
-                            name="email"
-                            placeholder="Enter your email"
-                            label="Email"
-                        />
-                        <GPassword
-                            type="password"
-                            name="password"
-                            placeholder="Enter your password"
-                            label="Password"
-                        />
-                        <div className="flex justify-start">
-                            <Link
-                                to="/forget-password"
-                                className="text-[var(--secondary-color)] hover:underline"
-                            >
-                                Forgot Password?
-                            </Link>
-                        </div>
-                        <button
-                            type="submit"
-                            className="bg-[var(--secondary-color)] text-[var(--primary-color)] w-full py-2 rounded-lg"
+                    <GInput
+                        type="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        label="Email"
+                    />
+                    <GPassword
+                        type="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        label="Password"
+                    />
+                    <div className="flex justify-start my-2">
+                        <Link
+                            to="/forget-password"
+                            className="text-[var(--secondary-color)] hover:underline"
                         >
-                            Login
-                        </button>
+                            Forgot Password?
+                        </Link>
                     </div>
+                    <button
+                        type="submit"
+                        className="bg-[var(--secondary-color)] text-[var(--primary-color)] w-full py-2 rounded-lg"
+                    >
+                        Login
+                    </button>
                 </GForm>
                 <Divider className="my-6" />
                 <div className="flex justify-start">
@@ -102,7 +100,7 @@ const Login = () => {
                         Don't have an account?{" "}
                         <Link
                             to="/register"
-                            className="text-[var(--secondary-color)] hover:underline"
+                            className="text-[var(--secondary-color)] underline"
                         >
                             Sign Up
                         </Link>
